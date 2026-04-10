@@ -50,6 +50,12 @@ p, li, label { color: var(--text-color); }
     padding: 16px 20px;
     margin-bottom: 8px;
 }
+
+/* Keep Sankey labels crisp in light mode (no ghost/shadow under text). */
+.js-plotly-plot .sankey .node text {
+    text-shadow: none !important;
+    filter: none !important;
+}
 </style>
 """
 

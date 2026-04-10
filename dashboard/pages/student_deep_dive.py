@@ -142,28 +142,28 @@ def render(df, df_full, display_outcome, outcome_display_order):
     dark_layout(fig_radar)
     st.plotly_chart(fig_radar, use_container_width=True)
 
-    st.markdown("<p class='section-header'>AI-Suggested Interventions</p>", unsafe_allow_html=True)
+    st.markdown("<p class='section-header'>🤖 AI-Suggested Interventions</p>", unsafe_allow_html=True)
 
     def rule_interventions(s):
         tips = []
         if s.get("Debtor") == 1:
-            tips.append(("Financial Aid Referral", "Student has outstanding debt. Connect with the financial aid office for payment plans or emergency grants.", "High Priority"))
+            tips.append(("💰 Financial Aid Referral", "Student has outstanding debt. Connect with the financial aid office for payment plans or emergency grants.", "High Priority"))
         if s.get("Tuition fees up to date") == 0:
-            tips.append(("Tuition Assistance", "Tuition fees are not current. Risk of administrative withdrawal. Immediate intervention required.", "High Priority"))
+            tips.append(("💳 Tuition Assistance", "Tuition fees are not current. Risk of administrative withdrawal. Immediate intervention required.", "High Priority"))
         if s.get("Curricular units 2nd sem (approved)", 5) == 0:
-            tips.append(("Academic Probation Review", "Zero units approved in the 2nd semester signals serious academic difficulty. Schedule an urgent academic counselling session.", "High Priority"))
+            tips.append(("📚 Academic Probation Review", "Zero units approved in the 2nd semester signals serious academic difficulty. Schedule an urgent academic counselling session.", "High Priority"))
         if s.get("Curricular units 2nd sem (grade)", 10) < 8 and s.get("Curricular units 2nd sem (grade)", 10) > 0:
-            tips.append(("Tutoring Programme", f"2nd semester grade is {s.get('Curricular units 2nd sem (grade)',0):.1f} - below passing threshold. Enroll in tutoring or peer-learning groups.", "Medium Priority"))
+            tips.append(("📖 Tutoring Programme", f"2nd semester grade is {s.get('Curricular units 2nd sem (grade)',0):.1f} - below passing threshold. Enroll in tutoring or peer-learning groups.", "Medium Priority"))
         if s.get("Scholarship holder") == 0 and s.get("Debtor") == 1:
-            tips.append(("Scholarship Application", "Student is in debt without scholarship support. Advise on available merit/need-based scholarships.", "Medium Priority"))
+            tips.append(("🎓 Scholarship Application", "Student is in debt without scholarship support. Advise on available merit/need-based scholarships.", "Medium Priority"))
         if s.get("Age at enrollment", 20) > 30:
-            tips.append(("Adult Learner Support", "Mature student who may benefit from flexible scheduling, online resources, or mentoring from alumni.", "Low Priority"))
+            tips.append(("🌐 Adult Learner Support", "Mature student who may benefit from flexible scheduling, online resources, or mentoring from alumni.", "Low Priority"))
         if s.get("International") == 1:
-            tips.append(("International Student Office", "International student - ensure visa status, housing, and language support are in order.", "Low Priority"))
+            tips.append(("🌍 International Student Office", "International student - ensure visa status, housing, and language support are in order.", "Low Priority"))
         if s.get("Student_Type") == "Abroad":
-            tips.append(("Abroad Student Liaison", "Emirati student studying abroad - ensure cultural adjustment support, UAE scholarship compliance, and regular check-ins.", "Medium Priority"))
+            tips.append(("✈️ Abroad Student Liaison", "Emirati student studying abroad - ensure cultural adjustment support, UAE scholarship compliance, and regular check-ins.", "Medium Priority"))
         if not tips:
-            tips.append(("On Track", "No immediate red flags detected. Continue monitoring and provide encouragement.", "Informational"))
+            tips.append(("✅ On Track", "No immediate red flags detected. Continue monitoring and provide encouragement.", "Informational"))
         return tips
 
     pri_color = {"High Priority": "#f87171", "Medium Priority": "#fbbf24", "Low Priority": "#34d399", "Informational": "#60a5fa"}

@@ -153,20 +153,73 @@ def render(df_full):
         st.plotly_chart(fig_funnel, use_container_width=True)
 
         cohort_n = len(udf)
-        graduated_n = (udf["Predicted_Target"] == "Graduate").sum()
-        dropped_n = (udf["Predicted_Target"] == "Dropout").sum()
-        pending_n = (udf["Predicted_Target"] == "Enrolled").sum()
+        outcome_counts = (
+            udf["Predicted_Target"]
+            .value_counts()
+            .reindex(["Dropout", "Enrolled", "Graduate"], fill_value=0)
+        )
+        dropped_n = int(outcome_counts["Dropout"])
+        pending_n = int(outcome_counts["Enrolled"])
+        graduated_n = int(outcome_counts["Graduate"])
+
+        reason_counts = (
+            udf.loc[udf["Predicted_Target"] == "Dropout", "Dropout_Reason"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+            .replace("", "Unspecified Reason")
+            .value_counts()
+        )
+
+        reason_labels = [f"Reason: {r}" for r in reason_counts.index.tolist()]
+        reason_values = [int(v) for v in reason_counts.tolist()]
+        if not reason_labels:
+            reason_labels = ["Reason: No predicted dropouts"]
+            reason_values = [0]
+
+        nodes = [
+            "Cohort",
+            "Predicted Dropout",
+            "Predicted Pending",
+            "Predicted Graduate",
+            *reason_labels,
+        ]
+
+        sources = [0, 0, 0]
+        targets = [1, 2, 3]
+        values = [dropped_n, pending_n, graduated_n]
+
+        for i, v in enumerate(reason_values):
+            sources.append(1)
+            targets.append(4 + i)
+            values.append(v)
+
+        node_colors = ["#60a5fa", "#f87171", "#fbbf24", "#34d399"] + ["#fb7185"] * len(reason_labels)
+        link_colors = [
+            "rgba(248,113,113,0.20)",
+            "rgba(251,191,36,0.20)",
+            "rgba(52,211,153,0.20)",
+        ] + ["rgba(248,113,113,0.16)"] * len(reason_labels)
 
         fig_sk = go.Figure(
-            go.Funnel(
-                y=["Cohort Size", "Not Dropped (Pending + Graduated)", "Graduated", "Dropped Out"],
-                x=[cohort_n, pending_n + graduated_n, graduated_n, dropped_n],
-                textinfo="value+percent initial",
-                marker_color=["#60a5fa", "#fbbf24", "#34d399", "#f87171"],
+            go.Sankey(
+                arrangement="snap",
+                node=dict(
+                    label=nodes,
+                    pad=18,
+                    thickness=18,
+                    color=node_colors,
+                ),
+                link=dict(
+                    source=sources,
+                    target=targets,
+                    value=values,
+                    color=link_colors,
+                ),
             )
         )
-        fig_sk.update_layout(title=f"Overall Student Journey Funnel – {sel_uni}")
-        dark_layout(fig_sk, height=360)
+        fig_sk.update_layout(title=f"Overall Student Journey Sankey – {sel_uni}")
+        dark_layout(fig_sk, height=430)
         st.plotly_chart(fig_sk, use_container_width=True)
 
     with tab_reasons:
