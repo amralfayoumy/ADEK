@@ -131,7 +131,7 @@ ROUTES = {
     ":material/psychology: Predict New Student": lambda: predict_new_student.render(
         display_outcome, OUTCOME_DISPLAY_ORDER
     ),
-    ":material/monitoring: Model Performance": lambda: model_performance.render(
+    ":material/monitoring: Model Management": lambda: model_performance.render(
         df_full, get_trainer, display_outcome
     ),
 }

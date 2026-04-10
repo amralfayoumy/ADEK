@@ -1,10 +1,13 @@
 import hashlib
+import io
 import json
 import os
 import platform
+import re
 import shutil
 import time
 from datetime import datetime, timezone
+from html import escape
 
 import joblib
 import numpy as np
@@ -29,6 +32,14 @@ SECTION_VERSIONING = ":material/deployed_code: Versioning"
 SECTION_RETRAIN = ":material/model_training: Retrain"
 ACTIVE_SECTION_KEY = "mlops_active_section"
 PENDING_SECTION_KEY = "mlops_pending_active_section"
+ETL_REPORT_KEY = "mlops_last_etl_report"
+ETL_LOGS_KEY = "mlops_last_etl_logs"
+RETRAIN_LOGS_KEY = "mlops_last_retrain_logs"
+LOG_LEVEL_COLORS = {
+    "INFO": "#1d4ed8",
+    "WARN": "#b45309",
+    "ERROR": "#b91c1c",
+}
 SECTION_OPTIONS = [
     SECTION_SUMMARY,
     SECTION_EVAL,
@@ -41,6 +52,112 @@ SECTION_OPTIONS = [
 def _queue_active_section(section):
     if section in SECTION_OPTIONS:
         st.session_state[PENDING_SECTION_KEY] = section
+
+
+def _parse_log_line(line):
+    text = str(line).strip()
+    if not text:
+        return None
+
+    match = re.match(r"^\[(INFO|WARN|ERROR)\]\s*(.*)$", text, flags=re.IGNORECASE)
+    if match:
+        return match.group(1).upper(), match.group(2).strip()
+
+    lowered = text.lower()
+    if any(token in lowered for token in ["error", "failed", "exception", "traceback"]):
+        return "ERROR", text
+    if "warning" in lowered or "warn" in lowered:
+        return "WARN", text
+    return "INFO", text
+
+
+def _render_color_logs(logs, max_lines=300):
+    if logs is None:
+        st.caption("No logs available.")
+        return
+
+    if isinstance(logs, str):
+        lines = logs.splitlines()
+    elif isinstance(logs, (list, tuple)):
+        lines = [str(item) for item in logs]
+    else:
+        lines = [str(logs)]
+
+    lines = [line for line in lines if str(line).strip()]
+    if not lines:
+        st.caption("No logs available.")
+        return
+
+    lines = lines[-max_lines:]
+    html_lines = []
+    for line in lines:
+        parsed = _parse_log_line(line)
+        if parsed is None:
+            continue
+        level, message = parsed
+        color = LOG_LEVEL_COLORS.get(level, LOG_LEVEL_COLORS["INFO"])
+        html_lines.append(
+            "<div style='font-family:Consolas,\"Courier New\",monospace;"
+            "font-size:0.82rem;line-height:1.45;'>"
+            f"<span style='color:{color};font-weight:700;'>[{level}]</span> "
+            f"<span>{escape(message)}</span>"
+            "</div>"
+        )
+
+    st.markdown("".join(html_lines), unsafe_allow_html=True)
+
+
+def _simulate_etl_refresh(data_path=DATA_PATH):
+    logs = []
+
+    def log(msg, level="INFO"):
+        stamp = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+        logs.append(f"[{level.upper()}] [{stamp}] {msg}")
+
+    log("Starting orchestrated ETL refresh.")
+    log("Extract complete: Student Information System feed.")
+    log("Extract complete: Academic records feed.")
+    log("Extract complete: Finance and attendance feed.")
+    log("Applying schema harmonization and entity resolution rules.")
+
+    df = _safe_read_csv(data_path)
+    if df is None:
+        raise FileNotFoundError(
+            f"ETL refresh failed: could not read {data_path}."
+        )
+
+    duplicate_rows = int(df.duplicated().sum())
+    missing_cells = int(df.isna().sum().sum())
+    dataset_sha = _sha256_of_file(data_path)[:16]
+    dataset_fp = _dataset_fingerprint(df)[:16]
+
+    log(
+        f"Curated dataset assembled with {len(df):,} rows and {df.shape[1]} columns."
+    )
+    if duplicate_rows > 0 or missing_cells > 0:
+        log(
+            "Data quality checks completed with warnings "
+            f"(duplicates={duplicate_rows:,}, missing cells={missing_cells:,}).",
+            level="WARN",
+        )
+    else:
+        log(
+            "Data quality checks passed "
+            f"(duplicates={duplicate_rows:,}, missing cells={missing_cells:,})."
+        )
+    log("Published refreshed analytics-ready dataset snapshot.")
+
+    report = {
+        "refreshed_utc": _utc_now_iso(),
+        "dataset_path": data_path,
+        "rows": int(len(df)),
+        "columns": int(df.shape[1]),
+        "duplicates": duplicate_rows,
+        "missing_cells": missing_cells,
+        "dataset_sha256": dataset_sha,
+        "dataset_fingerprint": dataset_fp,
+    }
+    return report, logs
 
 
 def _utc_now_iso():
@@ -522,15 +639,23 @@ def _train_candidate_model(
     os.makedirs(candidate_paths["base_dir"], exist_ok=True)
 
     production_paths = _trainer_path_map(mt)
+    trainer_logs = ""
     try:
         _apply_trainer_path_map(mt, candidate_paths)
         start = time.perf_counter()
-        scored_df = mt.train_and_save(
-            data_path,
-            selected_features=selected_features,
-            selected_models=selected_models,
-            model_params=model_params,
-        )
+        stdout_buffer = io.StringIO()
+        original_stdout = os.sys.stdout
+        try:
+            os.sys.stdout = stdout_buffer
+            scored_df = mt.train_and_save(
+                data_path,
+                selected_features=selected_features,
+                selected_models=selected_models,
+                model_params=model_params,
+            )
+        finally:
+            os.sys.stdout = original_stdout
+        trainer_logs = stdout_buffer.getvalue()
         runtime_sec = round(time.perf_counter() - start, 2)
     finally:
         _apply_trainer_path_map(mt, production_paths)
@@ -552,6 +677,7 @@ def _train_candidate_model(
         "dataset_sha256": _sha256_of_file(data_path)[:16],
         "dataset_fingerprint": _dataset_fingerprint(scored_df)[:16],
         "paths": candidate_paths,
+        "trainer_logs": trainer_logs,
     }
 
 
@@ -605,7 +731,7 @@ def _discard_candidate_model(candidate_info):
 
 
 def render(df_full, get_trainer, display_outcome):
-    st.markdown("# :material/monitoring: Model Performance & MLOps")
+    st.markdown("# :material/monitoring: Model Management & MLOps")
     st.caption("Centralized monitoring, governance, versioning, and retraining controls.")
 
     required_cols = {"Target", "Predicted_Target"}
@@ -1219,6 +1345,72 @@ def render(df_full, get_trainer, display_outcome):
                 st.rerun()
 
     if active_section == SECTION_RETRAIN:
+        st.markdown("#### Data Refresh")
+        st.caption(
+            "Simulates re-ingestion from multiple upstream systems and a refreshed aggregated dataset."
+        )
+
+        last_etl_report = st.session_state.get(ETL_REPORT_KEY)
+        if last_etl_report:
+            st.info(
+                "Last ETL refresh: "
+                f"{last_etl_report.get('refreshed_utc', 'Unknown')}"
+            )
+            etl_report_df = pd.DataFrame([last_etl_report])
+            show_cols = [
+                "refreshed_utc",
+                "rows",
+                "columns",
+                "duplicates",
+                "missing_cells",
+                "dataset_sha256",
+                "dataset_fingerprint",
+            ]
+            etl_show_cols = [c for c in show_cols if c in etl_report_df.columns]
+            st.dataframe(etl_report_df[etl_show_cols], width="stretch")
+
+        rerun_etl_clicked = st.button(
+            ":material/sync: Re-run ETL",
+            width="stretch",
+            key="rerun_etl_button",
+        )
+        if rerun_etl_clicked:
+            try:
+                with st.status(
+                    ":material/hub: Running ETL orchestration simulation ...",
+                    expanded=True,
+                ) as etl_status:
+                    st.write("Step 1/6 - Connect to Student Information System feed")
+                    st.write("Step 2/6 - Pull academic outcomes and performance feed")
+                    st.write("Step 3/6 - Pull finance and attendance feed")
+                    st.write("Step 4/6 - Join sources and standardize schema")
+                    st.write("Step 5/6 - Run data quality checks")
+                    etl_report, etl_logs = _simulate_etl_refresh(DATA_PATH)
+                    st.write(
+                        "Step 6/6 - Publish refreshed curated dataset "
+                        f"({etl_report['rows']:,} rows, {etl_report['columns']} columns)"
+                    )
+                    etl_status.update(
+                        label=":material/check_circle: ETL refresh completed.",
+                        state="complete",
+                    )
+
+                st.session_state[ETL_REPORT_KEY] = etl_report
+                st.session_state[ETL_LOGS_KEY] = etl_logs
+                st.session_state[
+                    "mlops_retrain_notice"
+                ] = "ETL refresh completed. Dataset snapshot is ready for candidate retraining."
+                _queue_active_section(SECTION_RETRAIN)
+                st.rerun()
+            except Exception as exc:
+                st.error("ETL refresh failed. Review the exception below.")
+                st.exception(exc)
+
+        etl_logs = st.session_state.get(ETL_LOGS_KEY)
+        if etl_logs:
+            with st.expander("Latest ETL Run Log", expanded=False):
+                _render_color_logs(etl_logs, max_lines=300)
+
         st.markdown("#### Candidate Retrain Workflow")
         st.caption(
             "Step 1: Configure feature/model/hyperparameter choices. "
@@ -1335,7 +1527,15 @@ def render(df_full, get_trainer, display_outcome):
                 st.error("Candidate retrain aborted: data.csv is missing.")
             else:
                 try:
-                    with st.spinner(":material/sync: Training candidate model artefacts ..."):
+                    with st.status(
+                        ":material/model_training: Running candidate retraining pipeline ...",
+                        expanded=True,
+                    ) as retrain_status:
+                        st.write("Step 1/6 - Validate dataset availability and schema")
+                        st.write("Step 2/6 - Apply leakage blacklist and feature configuration")
+                        st.write("Step 3/6 - Build model pipelines and hyperparameter settings")
+                        st.write("Step 4/6 - Train base learners and generate stacked signals")
+                        st.write("Step 5/6 - Fit final candidate artefacts and score dataset")
                         candidate_info = _train_candidate_model(
                             mt,
                             DATA_PATH,
@@ -1343,6 +1543,22 @@ def render(df_full, get_trainer, display_outcome):
                             selected_models=selected_models,
                             model_params=parsed_model_params,
                         )
+                        st.write(
+                            "Step 6/6 - Stage candidate for review "
+                            f"(runtime: {candidate_info.get('runtime_sec', 0)} sec)"
+                        )
+
+                        trainer_logs = (candidate_info.get("trainer_logs") or "").strip()
+                        if trainer_logs:
+                            st.write("Trainer output (last 20 lines):")
+                            tail_lines = trainer_logs.splitlines()[-20:]
+                            _render_color_logs(tail_lines, max_lines=20)
+
+                        retrain_status.update(
+                            label=":material/check_circle: Candidate training completed and staged.",
+                            state="complete",
+                        )
+
                         candidate_info["baseline_metrics"] = {
                             "accuracy": metrics["accuracy"],
                             "macro_f1": metrics["macro_f1"],
@@ -1350,6 +1566,7 @@ def render(df_full, get_trainer, display_outcome):
                         }
                         candidate_info["blocked_features"] = blacklisted_features
                         st.session_state[PENDING_CANDIDATE_KEY] = candidate_info
+                        st.session_state[RETRAIN_LOGS_KEY] = candidate_info.get("trainer_logs", "")
                         st.session_state[
                             "mlops_retrain_notice"
                         ] = (
@@ -1361,6 +1578,11 @@ def render(df_full, get_trainer, display_outcome):
                 except Exception as exc:
                     st.error("Candidate retrain failed. Review the exception below.")
                     st.exception(exc)
+
+        retrain_logs = (st.session_state.get(RETRAIN_LOGS_KEY) or "").strip()
+        if retrain_logs:
+            with st.expander("Latest Candidate Retrain Log", expanded=False):
+                _render_color_logs(retrain_logs, max_lines=600)
 
         pending_candidate = st.session_state.get(PENDING_CANDIDATE_KEY)
         if pending_candidate:

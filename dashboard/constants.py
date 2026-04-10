@@ -13,7 +13,7 @@ PAGE_OPTIONS = [
     ":material/warning: At-Risk Students",
     ":material/manage_search: Student Deep-Dive",
     ":material/psychology: Predict New Student",
-    ":material/monitoring: Model Performance",
+    ":material/monitoring: Model Management",
 ]
 PAGES = PAGE_OPTIONS
 
