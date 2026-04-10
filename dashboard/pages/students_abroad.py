@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP
-from dashboard.ui import dark_layout, kpi
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi
 
 
 def render(df_full, display_outcome):
@@ -89,6 +89,7 @@ def render(df_full, display_outcome):
             color_discrete_map={"Dropout_Rate": "#f87171", "Grad_Rate": "#34d399"},
         )
         dark_layout(fig_trend_ab, height=360)
+        enforce_integer_year_axis(fig_trend_ab, axis="x")
         r2.plotly_chart(fig_trend_ab, use_container_width=True)
 
     with tab_compare:
@@ -148,16 +149,19 @@ def render(df_full, display_outcome):
 
         out_both = both.groupby(["Group", "Predicted_Target"]).size().reset_index(name="Count")
         out_both["Predicted_Target_Display"] = out_both["Predicted_Target"].map(display_outcome)
+        out_both["Percentage"] = out_both["Count"] / out_both.groupby("Group")["Count"].transform("sum")
         fig_out_both = px.bar(
             out_both,
-            x="Group",
-            y="Count",
-            color="Predicted_Target_Display",
-            color_discrete_map=COLOR_MAP,
-            barmode="stack",
+            x="Predicted_Target_Display",
+            y="Percentage",
+            color="Group",
+            color_discrete_map=grp_colors,
+            barmode="group",
             title="Predicted Outcomes: Abroad vs Domestic",
+            text_auto=".1%",
         )
         dark_layout(fig_out_both, height=380)
+        fig_out_both.update_yaxes(tickformat=".0%", range=[0, 1], title="Percentage")
         st.plotly_chart(fig_out_both, use_container_width=True)
 
     with tab_uni:

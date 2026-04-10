@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, kpi
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi
 
 
 def render(df_full):
@@ -118,9 +118,13 @@ def render(df_full):
             pending_count = (cohort["Predicted_Target"] == "Enrolled").sum()
             graduated = (cohort["Predicted_Target"] == "Graduate").sum()
             dropped = (cohort["Predicted_Target"] == "Dropout").sum()
+            try:
+                year_label = str(int(float(yr)))
+            except (TypeError, ValueError):
+                year_label = str(yr)
             funnel_rows.append(
                 {
-                    "Year": str(yr),
+                    "Year": year_label,
                     "Cohort Size": cohort_size,
                     "Graduated": graduated,
                     "Dropped Out": dropped,
@@ -281,4 +285,5 @@ def render(df_full):
             labels={"value": "Rate", "variable": "Metric"},
         )
         dark_layout(fig_trend, height=400)
+        enforce_integer_year_axis(fig_trend, axis="x")
         st.plotly_chart(fig_trend, use_container_width=True)

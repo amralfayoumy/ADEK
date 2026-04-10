@@ -1,5 +1,6 @@
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 import streamlit as st
 
 from dashboard.constants import UNI_COLORS
@@ -139,8 +140,15 @@ def render(df_full):
         st.plotly_chart(fig_radar_cmp, use_container_width=True)
 
     with tab_trend:
+        trend_df = cmp_df.copy()
+        trend_df["Enrollment_Year"] = pd.to_numeric(
+            trend_df["Enrollment_Year"], errors="coerce"
+        ).round()
+        trend_df = trend_df.dropna(subset=["Enrollment_Year"])
+        trend_df["Enrollment_Year"] = trend_df["Enrollment_Year"].astype(int)
+
         trend_all = (
-            cmp_df.groupby(["University", "Enrollment_Year"])
+            trend_df.groupby(["University", "Enrollment_Year"])
             .agg(
                 Dropout_Rate=("Predicted_Target", lambda x: (x == "Dropout").mean()),
                 Grad_Rate=("Predicted_Target", lambda x: (x == "Graduate").mean()),
@@ -149,12 +157,14 @@ def render(df_full):
             )
             .reset_index()
         )
+        year_categories = sorted(trend_all["Enrollment_Year"].unique().tolist())
+        trend_all["Enrollment_Year_Label"] = trend_all["Enrollment_Year"].astype(str)
 
         metric_sel = st.selectbox("Metric", ["Dropout_Rate", "Grad_Rate", "High_Risk", "Students"])
 
         fig_trend_all = px.line(
             trend_all,
-            x="Enrollment_Year",
+            x="Enrollment_Year_Label",
             y=metric_sel,
             color="University",
             markers=True,
@@ -162,6 +172,11 @@ def render(df_full):
             color_discrete_sequence=UNI_COLORS,
         )
         dark_layout(fig_trend_all, height=440)
+        fig_trend_all.update_xaxes(
+            type="category",
+            categoryorder="array",
+            categoryarray=[str(y) for y in year_categories],
+        )
         st.plotly_chart(fig_trend_all, use_container_width=True)
 
         if {"Unemployment rate", "GDP", "Risk_Score"}.issubset(cmp_df.columns):

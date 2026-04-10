@@ -50,6 +50,15 @@ def dark_layout(fig, height=None):
     return fig
 
 
+def enforce_integer_year_axis(fig, axis="x"):
+    axis_kwargs = {"tickmode": "linear", "tick0": 0, "dtick": 1, "tickformat": "d"}
+    if axis in ("x", "both"):
+        fig.update_xaxes(**axis_kwargs)
+    if axis in ("y", "both"):
+        fig.update_yaxes(**axis_kwargs)
+    return fig
+
+
 def kpi(col, val, label, delta="", color="#60a5fa"):
     col.markdown(
         f'<div class="kpi-card">'
