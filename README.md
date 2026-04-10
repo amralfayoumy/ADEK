@@ -111,8 +111,10 @@ Data
          XGBoost (Optuna-tuned)
                 │
          Final Prediction
-     (Dropout / Enrolled / Graduate)
+        (Dropout / Pending / Graduate)
 ```
+
+      Dashboard note: `Pending` is a display label for students whose outcome is not yet confident due to limited evidence. Model internals and artifacts still store this class as `Enrolled`.
 
 Hyperparameters are taken directly from the Optuna-tuned values in the original notebook.
 
@@ -126,4 +128,4 @@ Hyperparameters are taken directly from the Optuna-tuned values in the original 
 | 🟡 Medium | 30–60% |
 | 🟢 Low | < 30% |
 
-Low-Engagement flag: `Enrolled` prediction **and** 0 units approved in 2nd semester.
+Low-Engagement flag: internal `Enrolled` prediction (displayed as `Pending`) **and** 0 units approved in 2nd semester.

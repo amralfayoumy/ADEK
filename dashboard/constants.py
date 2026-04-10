@@ -1,0 +1,56 @@
+import importlib.util
+
+HAS_STATSMODELS = importlib.util.find_spec("statsmodels") is not None
+
+PAGE_OPTIONS = [
+    "📊 Overview",
+    "🚨 At-Risk Students",
+    "📈 Analytics",
+    "🌍 Macro-Economic",
+    "🔍 Student Deep-Dive",
+    "🤖 Predict New Student",
+    "📉 Model Performance",
+    "🏛️ University Deep Dive",
+    "🇦🇪 Emirati vs Expats",
+    "✈️ Students Abroad",
+    "🎓 College / Program Deep Dive",
+    "🏆 University Comparison",
+]
+PAGES = PAGE_OPTIONS
+
+OUTCOME_LABEL_MAP = {
+    "Dropout": "Dropout",
+    "Enrolled": "Pending",
+    "Graduate": "Graduate",
+}
+OUTCOME_RAW_ORDER = ["Dropout", "Enrolled", "Graduate"]
+OUTCOME_DISPLAY_ORDER = [OUTCOME_LABEL_MAP[c] for c in OUTCOME_RAW_ORDER]
+
+COLOR_MAP = {"Dropout": "#f87171", "Pending": "#fbbf24", "Graduate": "#34d399"}
+RISK_MAP = {"High": "#f87171", "Medium": "#fbbf24", "Low": "#34d399"}
+STYPE_MAP = {"Emirati": "#60a5fa", "Expat": "#a78bfa", "Abroad": "#34d399"}
+UNI_COLORS = ["#60a5fa", "#a78bfa", "#34d399", "#fbbf24", "#f87171", "#fb923c"]
+
+COURSE_MAP = {
+    33: "Biofuel Production Technologies",
+    171: "Animation & Multimedia Design",
+    8014: "Social Service (evening)",
+    9003: "Agronomy",
+    9070: "Communication Design",
+    9085: "Veterinary Nursing",
+    9119: "Informatics Engineering",
+    9130: "Equinculture",
+    9147: "Management",
+    9238: "Social Service",
+    9254: "Tourism",
+    9500: "Nursing",
+    9556: "Oral Hygiene",
+    9670: "Advertising & Marketing Management",
+    9773: "Journalism & Communication",
+    9853: "Basic Education",
+    9991: "Management (evening)",
+}
+
+
+def display_outcome(label):
+    return OUTCOME_LABEL_MAP.get(label, label)
