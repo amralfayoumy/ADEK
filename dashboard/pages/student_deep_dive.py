@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.constants import STYPE_MAP
+from dashboard.ui import dark_layout
 
 
 def render(df, df_full, display_outcome, outcome_display_order):
@@ -41,7 +42,7 @@ def render(df, df_full, display_outcome, outcome_display_order):
         unsafe_allow_html=True,
     )
     stype = stu.get("Student_Type", "N/A")
-    stype_color = STYPE_MAP.get(stype, "#b0b8c8")
+    stype_color = STYPE_MAP.get(stype, "#64748b")
     h4.markdown(
         f'<div class="kpi-card"><p class="kpi-value" style="color:{stype_color}">{stype}</p><p class="kpi-label">Student Type</p></div>',
         unsafe_allow_html=True,
@@ -61,13 +62,10 @@ def render(df, df_full, display_outcome, outcome_display_order):
     )
     fig_prob.update_layout(
         title="Prediction Probabilities",
-        paper_bgcolor="#0f1117",
-        plot_bgcolor="#0f1117",
-        font_color="#b0b8c8",
         xaxis=dict(range=[0, 1.05], tickformat=".0%"),
-        height=200,
         margin=dict(t=40, b=10),
     )
+    dark_layout(fig_prob, height=200)
     st.plotly_chart(fig_prob, use_container_width=True)
 
     st.markdown("<p class='section-header'>Student Profile</p>", unsafe_allow_html=True)
@@ -137,12 +135,11 @@ def render(df, df_full, display_outcome, outcome_display_order):
         )
     )
     fig_radar.update_layout(
-        polar=dict(bgcolor="#1a2035", radialaxis=dict(visible=True, range=[0, 1])),
-        paper_bgcolor="#0f1117",
-        font_color="#b0b8c8",
+        polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
         title="Student vs Cohort Average",
         height=380,
     )
+    dark_layout(fig_radar)
     st.plotly_chart(fig_radar, use_container_width=True)
 
     st.markdown("<p class='section-header'>AI-Suggested Interventions</p>", unsafe_allow_html=True)
@@ -171,12 +168,12 @@ def render(df, df_full, display_outcome, outcome_display_order):
 
     pri_color = {"High Priority": "#f87171", "Medium Priority": "#fbbf24", "Low Priority": "#34d399", "Informational": "#60a5fa"}
     for title_t, body, priority in rule_interventions(stu):
-        clr = pri_color.get(priority, "#b0b8c8")
+        clr = pri_color.get(priority, "#64748b")
         st.markdown(
             f'<div class="intervention-card">'
             f'<span class="intervention-title">{title_t}</span>'
             f'<span style="float:right;font-size:0.75rem;color:{clr};font-weight:600">{priority}</span>'
-            f'<br><span style="font-size:0.9rem;color:#b0b8c8">{body}</span>'
+            f'<br><span style="font-size:0.9rem;color:var(--text-color);opacity:0.88">{body}</span>'
             f"</div>",
             unsafe_allow_html=True,
         )

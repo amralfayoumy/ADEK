@@ -131,12 +131,11 @@ def render(df_full):
                 )
             )
         fig_radar_cmp.update_layout(
-            polar=dict(bgcolor="#1a2035", radialaxis=dict(visible=True, range=[0, 1])),
-            paper_bgcolor="#0f1117",
-            font_color="#b0b8c8",
+            polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
             title="University Performance Radar (normalised – higher = better)",
             height=520,
         )
+        dark_layout(fig_radar_cmp)
         st.plotly_chart(fig_radar_cmp, use_container_width=True)
 
     with tab_trend:

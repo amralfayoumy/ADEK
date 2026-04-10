@@ -91,7 +91,6 @@ def render(df_full):
                 title="Student Type Composition",
             )
             dark_layout(fig_stype, height=320)
-            fig_stype.update_layout(legend_font_color="#b0b8c8")
             r3.plotly_chart(fig_stype, use_container_width=True)
         else:
             r3.info("Student-type data is unavailable for the selected filters.")
@@ -188,7 +187,6 @@ def render(df_full):
                 color_discrete_sequence=px.colors.qualitative.Set3,
             )
             dark_layout(fig_reason)
-            fig_reason.update_layout(legend_font_color="#b0b8c8")
             r1.plotly_chart(fig_reason, use_container_width=True)
 
             reason_stype = dropout_df.groupby(["Dropout_Reason", "Student_Type"]).size().reset_index(name="Count")

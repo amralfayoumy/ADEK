@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.data import get_trainer
+from dashboard.ui import dark_layout
 
 
 def render(display_outcome, outcome_display_order):
@@ -166,12 +167,9 @@ def render(display_outcome, outcome_display_order):
                 textposition="outside",
             )
         )
+        dark_layout(fig_new, height=220)
         fig_new.update_layout(
-            paper_bgcolor="#0f1117",
-            plot_bgcolor="#0f1117",
-            font_color="#b0b8c8",
             xaxis=dict(range=[0, 1.1], tickformat=".0%"),
-            height=220,
             margin=dict(t=20, b=10),
         )
         st.plotly_chart(fig_new, use_container_width=True)

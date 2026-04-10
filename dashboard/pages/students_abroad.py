@@ -69,7 +69,6 @@ def render(df_full, display_outcome):
                 color_discrete_sequence=px.colors.qualitative.Pastel,
             )
             dark_layout(fig_reas)
-            fig_reas.update_layout(legend_font_color="#b0b8c8")
             st.plotly_chart(fig_reas, use_container_width=True)
 
         trend_ab = (

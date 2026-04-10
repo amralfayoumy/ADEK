@@ -44,7 +44,6 @@ def render(df):
         title="Predicted Outcome Distribution",
     )
     dark_layout(fig_pie)
-    fig_pie.update_layout(legend_font_color="#b0b8c8")
     row1_l.plotly_chart(fig_pie, use_container_width=True)
 
     risk_dist = df["Risk_Label"].value_counts().reindex(["High", "Medium", "Low"]).reset_index()
