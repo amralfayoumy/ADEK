@@ -35,6 +35,7 @@ PENDING_SECTION_KEY = "mlops_pending_active_section"
 ETL_REPORT_KEY = "mlops_last_etl_report"
 ETL_LOGS_KEY = "mlops_last_etl_logs"
 RETRAIN_LOGS_KEY = "mlops_last_retrain_logs"
+RESET_CONFIRM_PHRASE = "RESET ALL MODELS"
 LOG_LEVEL_COLORS = {
     "INFO": "#1d4ed8",
     "WARN": "#b45309",
@@ -105,6 +106,181 @@ def _render_color_logs(logs, max_lines=300):
         )
 
     st.markdown("".join(html_lines), unsafe_allow_html=True)
+
+
+def _model_store_inventory(models_root="models"):
+    rows = []
+    total_files = 0
+    total_size = 0
+
+    if not os.path.isdir(models_root):
+        return pd.DataFrame(rows), {
+            "entries": 0,
+            "files": 0,
+            "size_mb": 0.0,
+        }
+
+    for entry in sorted(os.listdir(models_root)):
+        path = os.path.join(models_root, entry)
+        if os.path.isdir(path):
+            file_count = 0
+            byte_count = 0
+            for root, _dirs, files in os.walk(path):
+                file_count += len(files)
+                for file_name in files:
+                    file_path = os.path.join(root, file_name)
+                    try:
+                        byte_count += os.path.getsize(file_path)
+                    except OSError:
+                        pass
+            rows.append(
+                {
+                    "Entry": f"{entry}/",
+                    "Type": "Directory",
+                    "Files": file_count,
+                    "Size (MB)": round(byte_count / (1024 * 1024), 4),
+                }
+            )
+            total_files += file_count
+            total_size += byte_count
+        else:
+            try:
+                byte_count = os.path.getsize(path)
+            except OSError:
+                byte_count = 0
+            rows.append(
+                {
+                    "Entry": entry,
+                    "Type": "File",
+                    "Files": 1,
+                    "Size (MB)": round(byte_count / (1024 * 1024), 4),
+                }
+            )
+            total_files += 1
+            total_size += byte_count
+
+    return pd.DataFrame(rows), {
+        "entries": len(rows),
+        "files": total_files,
+        "size_mb": round(total_size / (1024 * 1024), 4),
+    }
+
+
+def _reset_all_model_artifacts(models_root="models"):
+    deleted_files = 0
+    deleted_dirs = 0
+
+    os.makedirs(models_root, exist_ok=True)
+    for entry in os.listdir(models_root):
+        path = os.path.join(models_root, entry)
+        if os.path.isdir(path):
+            file_count = 0
+            for _root, _dirs, files in os.walk(path):
+                file_count += len(files)
+            shutil.rmtree(path, ignore_errors=True)
+            deleted_dirs += 1
+            deleted_files += file_count
+        else:
+            try:
+                os.remove(path)
+                deleted_files += 1
+            except OSError:
+                pass
+
+    os.makedirs(models_root, exist_ok=True)
+    return {
+        "deleted_dirs": deleted_dirs,
+        "deleted_files": deleted_files,
+    }
+
+
+def _clear_mlops_runtime_state():
+    for key in [
+        PENDING_CANDIDATE_KEY,
+        ACTIVE_SECTION_KEY,
+        PENDING_SECTION_KEY,
+        ETL_REPORT_KEY,
+        ETL_LOGS_KEY,
+        RETRAIN_LOGS_KEY,
+        "mlops_retrain_notice",
+    ]:
+        st.session_state.pop(key, None)
+
+
+@st.dialog("Confirm Full Model Reset")
+def _confirm_full_model_reset_dialog(current_version, inventory_rows, inventory_summary):
+    st.error(
+        "This action permanently removes all model artefacts and version history from this environment."
+    )
+    st.markdown(
+        "\n".join(
+            [
+                "**What will be deleted:**",
+                "- Production model artefacts (`models/stacking_ensemble.joblib`, encoder, thresholds, features)",
+                "- Scored output (`models/all_student_scores.csv`)",
+                "- Candidate artefacts (`models/candidates/*`)",
+                "- Version snapshots (`models/versions/*`)",
+                "- Registry history (`models/model_registry.json`)",
+                "",
+                "After reset, the app returns to first-run mode and requires training a fresh model.",
+            ]
+        )
+    )
+
+    metric_col1, metric_col2, metric_col3 = st.columns(3)
+    metric_col1.metric("Current Version", current_version)
+    metric_col2.metric("Entries to Remove", inventory_summary.get("entries", 0))
+    metric_col3.metric("Estimated Size (MB)", inventory_summary.get("size_mb", 0.0))
+
+    if inventory_rows:
+        st.dataframe(pd.DataFrame(inventory_rows), width="stretch")
+    else:
+        st.info("No model artefacts are currently present in `models/`.")
+
+    confirm_phrase = st.text_input(
+        f"Type '{RESET_CONFIRM_PHRASE}' to confirm",
+        key="confirm_reset_phrase_input",
+    )
+    confirm_understanding = st.checkbox(
+        "I understand this will permanently delete all model artefacts and history.",
+        key="confirm_reset_checkbox",
+    )
+
+    action_col1, action_col2 = st.columns(2)
+    cancel_clicked = action_col1.button(
+        ":material/close: Cancel",
+        width="stretch",
+        key="cancel_full_reset_button",
+    )
+    confirm_clicked = action_col2.button(
+        ":material/delete_forever: Delete All Models And Reset",
+        type="primary",
+        width="stretch",
+        disabled=(confirm_phrase.strip().upper() != RESET_CONFIRM_PHRASE or not confirm_understanding),
+        key="confirm_full_reset_button",
+    )
+
+    if cancel_clicked:
+        _queue_active_section(SECTION_VERSIONING)
+        st.rerun()
+
+    if confirm_clicked:
+        try:
+            reset_result = _reset_all_model_artifacts("models")
+            _clear_mlops_runtime_state()
+            st.cache_data.clear()
+            st.cache_resource.clear()
+            st.session_state[
+                "mlops_retrain_notice"
+            ] = (
+                "Full model reset completed "
+                f"(removed {reset_result.get('deleted_files', 0)} files across "
+                f"{reset_result.get('deleted_dirs', 0)} directories)."
+            )
+            st.rerun()
+        except Exception as exc:
+            st.error("Full model reset failed. Review the exception below.")
+            st.exception(exc)
 
 
 def _simulate_etl_refresh(data_path=DATA_PATH):
@@ -1344,10 +1520,37 @@ def render(df_full, get_trainer, display_outcome):
                 _queue_active_section(SECTION_VERSIONING)
                 st.rerun()
 
+        st.markdown("---")
+        st.markdown("#### Full Environment Reset")
+        st.caption(
+            "Use this only when you need to wipe the complete model store and return the app to first-run training mode."
+        )
+
+        reset_inventory_df, reset_inventory_summary = _model_store_inventory("models")
+        reset_col1, reset_col2, reset_col3 = st.columns(3)
+        reset_col1.metric("Entries", reset_inventory_summary.get("entries", 0))
+        reset_col2.metric("Files", reset_inventory_summary.get("files", 0))
+        reset_col3.metric("Size (MB)", reset_inventory_summary.get("size_mb", 0.0))
+
+        reset_clicked = st.button(
+            ":material/delete_sweep: Delete All Models And Reset App",
+            type="primary",
+            width="stretch",
+            key="open_full_model_reset_dialog",
+        )
+        if reset_clicked:
+            st.session_state["confirm_reset_phrase_input"] = ""
+            st.session_state["confirm_reset_checkbox"] = False
+            _confirm_full_model_reset_dialog(
+                current_version=current_version,
+                inventory_rows=reset_inventory_df.to_dict("records"),
+                inventory_summary=reset_inventory_summary,
+            )
+
     if active_section == SECTION_RETRAIN:
         st.markdown("#### Data Refresh")
         st.caption(
-            "Simulates re-ingestion from multiple upstream systems and a refreshed aggregated dataset."
+            "Runs re-ingestion from multiple upstream systems and refreshes the aggregated dataset."
         )
 
         last_etl_report = st.session_state.get(ETL_REPORT_KEY)
