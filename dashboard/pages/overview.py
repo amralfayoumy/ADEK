@@ -104,11 +104,6 @@ def render(df):
     else:
         row2_r.info("Student-type segmentation is unavailable in the current dataset.")
 
-    st.info(
-        "Detailed university and program benchmarking has moved to University Comparison and "
-        "College / Program Deep Dive to keep this page focused on executive triage."
-    )
-
     st.markdown("<p class='section-header'>Grade Analysis</p>", unsafe_allow_html=True)
     ga1, ga2 = st.columns(2)
 

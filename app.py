@@ -19,7 +19,6 @@ from dashboard.data import (
     run_training,
 )
 from dashboard.pages import (
-    analytics,
     at_risk,
     college_program_deep_dive,
     emirati_vs_expats,
@@ -119,9 +118,13 @@ df_full, df = add_display_columns(df_full, df, display_outcome)
 
 ROUTES = {
     "📊 Overview": lambda: overview.render(df),
-    "🚨 At-Risk Students": lambda: at_risk.render(df, display_outcome),
-    "📈 Analytics": analytics.render,
     "🌍 Macro-Economic": lambda: macro_economic.render(df),
+    "🏆 University Comparison": lambda: university_comparison.render(df_full),
+    "🏛️ University Deep Dive": lambda: university_deep_dive.render(df_full),
+    "🎓 College / Program Deep Dive": lambda: college_program_deep_dive.render(df_full),
+    "🇦🇪 Emirati vs Expats": lambda: emirati_vs_expats.render(df_full, display_outcome),
+    "✈️ Students Abroad": lambda: students_abroad.render(df_full, display_outcome),
+    "🚨 At-Risk Students": lambda: at_risk.render(df, display_outcome),
     "🔍 Student Deep-Dive": lambda: student_deep_dive.render(
         df, df_full, display_outcome, OUTCOME_DISPLAY_ORDER
     ),
@@ -131,11 +134,6 @@ ROUTES = {
     "📉 Model Performance": lambda: model_performance.render(
         df_full, get_trainer, display_outcome
     ),
-    "🏛️ University Deep Dive": lambda: university_deep_dive.render(df_full),
-    "🇦🇪 Emirati vs Expats": lambda: emirati_vs_expats.render(df_full, display_outcome),
-    "✈️ Students Abroad": lambda: students_abroad.render(df_full, display_outcome),
-    "🎓 College / Program Deep Dive": lambda: college_program_deep_dive.render(df_full),
-    "🏆 University Comparison": lambda: university_comparison.render(df_full),
 }
 
 if page not in ROUTES:
