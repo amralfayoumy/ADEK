@@ -7,7 +7,7 @@ from dashboard.ui import dark_layout
 
 
 def render(df_full):
-    st.markdown("# 🏆 University Comparison")
+    st.markdown("# :material/balance: University Comparison")
     st.markdown("Side-by-side benchmarking of all UAE universities in the dataset.")
 
     compare_unis = st.multiselect(
@@ -36,7 +36,7 @@ def render(df_full):
     )
 
     tab_bar, tab_radar, tab_trend, tab_table, tab_scatter = st.tabs(
-        ["📊 Bar Charts", "🕸️ Radar", "📅 Trends", "📋 Table", "🔵 Scatter"]
+        [":material/bar_chart: Bar Charts", ":material/radar: Radar", ":material/timeline: Trends", ":material/table_rows: Table", ":material/scatter_plot: Scatter"]
     )
 
     with tab_bar:

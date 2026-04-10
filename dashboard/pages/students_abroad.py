@@ -7,7 +7,7 @@ from dashboard.ui import dark_layout, kpi
 
 
 def render(df_full, display_outcome):
-    st.markdown("# ✈️ Students Abroad")
+    st.markdown("# :material/flight_takeoff: Students Abroad")
     st.markdown(
         "Exclusively Emirati students studying outside the UAE — risk profile, performance, "
         "and comparisons against domestic Emiratis."
@@ -29,7 +29,7 @@ def render(df_full, display_outcome):
     st.markdown("<br>", unsafe_allow_html=True)
 
     tab_overview, tab_compare, tab_uni, tab_prog = st.tabs(
-        ["📊 Overview", "🆚 vs Domestic Emiratis", "🏛️ By University", "🎓 By Program"]
+        [":material/dashboard: Overview", ":material/compare_arrows: vs Domestic Emiratis", ":material/account_balance: By University", ":material/school: By Program"]
     )
 
     with tab_overview:
@@ -107,18 +107,18 @@ def render(df_full, display_outcome):
             }
 
         cmp = pd.DataFrame([
-            ab_kpis(abroad_df, "✈️ Abroad"),
-            ab_kpis(domestic_em, "🏠 Domestic Emirati"),
+            ab_kpis(abroad_df, "Abroad"),
+            ab_kpis(domestic_em, "Domestic Emirati"),
         ]).set_index("Group")
         st.dataframe(cmp, use_container_width=True)
 
         both = pd.concat(
             [
-                abroad_df.assign(Group="✈️ Abroad"),
-                domestic_em.assign(Group="🏠 Domestic Emirati"),
+                abroad_df.assign(Group="Abroad"),
+                domestic_em.assign(Group="Domestic Emirati"),
             ]
         )
-        grp_colors = {"✈️ Abroad": "#34d399", "🏠 Domestic Emirati": "#60a5fa"}
+        grp_colors = {"Abroad": "#34d399", "Domestic Emirati": "#60a5fa"}
 
         r1, r2 = st.columns(2)
 

@@ -8,7 +8,7 @@ from dashboard.ui import dark_layout, kpi
 
 
 def render(df_full):
-    st.markdown("# 🏛️ University Deep Dive")
+    st.markdown("# :material/account_balance: University Deep Dive")
 
     uni_list = sorted(df_full["University"].dropna().unique().tolist())
     sel_uni = st.selectbox("Select University", uni_list)
@@ -31,7 +31,7 @@ def render(df_full):
     st.markdown("<br>", unsafe_allow_html=True)
 
     tab_risk, tab_funnel, tab_reasons, tab_trend = st.tabs(
-        ["📊 Risk Tiers", "🔻 Enrollment Funnel", "❓ Dropout Reasons", "📅 Year Trend"]
+        [":material/stacked_bar_chart: Risk Tiers", ":material/filter_alt: Enrollment Funnel", ":material/help: Dropout Reasons", ":material/trending_up: Year Trend"]
     )
 
     with tab_risk:

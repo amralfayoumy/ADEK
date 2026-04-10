@@ -6,7 +6,7 @@ from dashboard.ui import dark_layout
 
 
 def render(df):
-    st.markdown("# 🌍 Macro-Economic Analysis")
+    st.markdown("# :material/public: Macro-Economic Analysis")
     st.markdown("How unemployment, inflation, and GDP relate to predicted dropout risk.")
 
     trendline_mode = "ols" if HAS_STATSMODELS else None

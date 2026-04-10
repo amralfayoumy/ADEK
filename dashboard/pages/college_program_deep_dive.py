@@ -6,7 +6,7 @@ from dashboard.ui import dark_layout, kpi, safe_course_name
 
 
 def render(df_full):
-    st.markdown("# 🎓 College / Program Deep Dive")
+    st.markdown("# :material/school: College / Program Deep Dive")
 
     sel_cp_uni = st.selectbox("University", sorted(df_full["University"].dropna().unique()))
     cp_uni_df = df_full[df_full["University"] == sel_cp_uni]
@@ -22,7 +22,7 @@ def render(df_full):
     st.markdown("<br>", unsafe_allow_html=True)
 
     tab_prog, tab_risk_heat, tab_grade, tab_stype = st.tabs(
-        ["📊 By Program", "🔥 Risk Heatmap", "📐 Grade Analysis", "👥 Student Types"]
+        [":material/bar_chart: By Program", ":material/grid_view: Risk Heatmap", ":material/functions: Grade Analysis", ":material/groups: Student Types"]
     )
 
     with tab_prog:

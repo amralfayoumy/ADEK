@@ -7,7 +7,7 @@ from dashboard.data import get_trainer
 
 
 def render(display_outcome, outcome_display_order):
-    st.markdown("# 🤖 Predict New Student Risk")
+    st.markdown("# :material/psychology: Predict New Student Risk")
     st.markdown("Enter a student's information to get an instant risk prediction.")
 
     mt = get_trainer()
@@ -71,7 +71,7 @@ def render(display_outcome, outcome_display_order):
         inflation = e2.number_input("Inflation Rate (%)", -5.0, 10.0, 1.4)
         gdp = e3.number_input("GDP", -5.0, 5.0, 1.74)
 
-        submitted = st.form_submit_button("🔮 Predict Risk", type="primary", use_container_width=True)
+        submitted = st.form_submit_button(":material/auto_fix_high: Predict Risk", type="primary", use_container_width=True)
 
     if submitted:
         row_data = {c: 0 for c in feat_cols}
@@ -136,7 +136,7 @@ def render(display_outcome, outcome_display_order):
         risk_clr = {"High": "#f87171", "Medium": "#fbbf24", "Low": "#34d399"}[risk_level]
 
         st.markdown("---")
-        st.markdown("## 🔮 Prediction Result")
+        st.markdown("## :material/analytics: Prediction Result")
         r1, r2, r3, r4 = st.columns(4)
         r1.markdown(
             f'<div class="kpi-card"><p class="kpi-value" style="color:{risk_clr}">{p_dropout*100:.1f}%</p><p class="kpi-label">Dropout Risk</p></div>',

@@ -6,7 +6,7 @@ from dashboard.ui import dark_layout, gauge_chart, kpi
 
 
 def render(df):
-    st.markdown("# 📊 Student Performance Overview")
+    st.markdown("# :material/insights: Student Performance Overview")
     st.markdown("Real-time risk analytics powered by a stacking ensemble model.")
 
     total = len(df)

@@ -35,9 +35,9 @@ def _academic_alert(row):
 
 
 def render(df, display_outcome):
-    st.markdown("# 🚨 Early Warning System")
+    st.markdown("# :material/warning: Early Warning System")
 
-    tab_dropout, tab_engage = st.tabs(["🔴 Dropout Risk", "🟡 Low Engagement"])
+    tab_dropout, tab_engage = st.tabs([":material/error: Dropout Risk", ":material/sentiment_dissatisfied: Low Engagement"])
 
     with tab_dropout:
         high_risk = df[df["Risk_Label"] == "High"].sort_values("Risk_Score", ascending=False)

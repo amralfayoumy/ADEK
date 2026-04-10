@@ -28,7 +28,7 @@ def load_scores() -> pd.DataFrame:
 
 def run_training(data_csv=DATA_CSV):
     mt = get_trainer()
-    with st.spinner("🔄 Training ensemble model … (first run only – ~2-5 min)"):
+    with st.spinner(":material/sync: Training ensemble model ... (first run only - ~2-5 min)"):
         df = mt.train_and_save(data_csv)
     st.cache_data.clear()
     return df

@@ -35,7 +35,7 @@ from dashboard.styles import inject_global_styles
 
 st.set_page_config(
     page_title="UAE Student Risk Analytics",
-    page_icon="🎓",
+    page_icon=":material/school:",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -43,7 +43,7 @@ inject_global_styles()
 
 
 with st.sidebar:
-    st.markdown("## 🎓 UAE Student Analytics")
+    st.markdown("## :material/school: UAE Student Analytics")
     st.markdown("---")
 
     page = st.radio("Navigation", PAGES, label_visibility="collapsed")
@@ -54,15 +54,15 @@ with st.sidebar:
     model_ok = not need_training()
 
     st.markdown("### Status")
-    st.markdown(f"{'✅' if data_ok else '❌'} dataset `data.csv`")
-    st.markdown(f"{'✅' if model_ok else '⏳'} trained model")
+    st.markdown(f"{':material/check_circle:' if data_ok else ':material/error:'} dataset `data.csv`")
+    st.markdown(f"{':material/check_circle:' if model_ok else ':material/schedule:'} trained model")
 
     if not data_ok:
         st.warning("Place `data.csv` in the same folder, then refresh.")
         st.stop()
 
     if not model_ok:
-        if st.button("▶ Train Model Now", type="primary", use_container_width=True):
+        if st.button(":material/play_arrow: Train Model Now", type="primary", use_container_width=True):
             run_training()
             st.rerun()
         st.info("Click the button above to train the model on first run.")
@@ -70,7 +70,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    st.markdown("### 🔎 Global Filters")
+    st.markdown("### :material/filter_alt: Global Filters")
     df_full = load_scores()
     if df_full is None:
         st.error("Scores not found. Re-train the model.")
@@ -117,21 +117,21 @@ df_full, df = add_display_columns(df_full, df, display_outcome)
 
 
 ROUTES = {
-    "📊 Overview": lambda: overview.render(df),
-    "🌍 Macro-Economic": lambda: macro_economic.render(df),
-    "🏆 University Comparison": lambda: university_comparison.render(df_full),
-    "🏛️ University Deep Dive": lambda: university_deep_dive.render(df_full),
-    "🎓 College / Program Deep Dive": lambda: college_program_deep_dive.render(df_full),
-    "🇦🇪 Emirati vs Expats": lambda: emirati_vs_expats.render(df_full, display_outcome),
-    "✈️ Students Abroad": lambda: students_abroad.render(df_full, display_outcome),
-    "🚨 At-Risk Students": lambda: at_risk.render(df, display_outcome),
-    "🔍 Student Deep-Dive": lambda: student_deep_dive.render(
+    ":material/insights: Overview": lambda: overview.render(df),
+    ":material/public: Macro-Economic": lambda: macro_economic.render(df),
+    ":material/balance: University Comparison": lambda: university_comparison.render(df_full),
+    ":material/account_balance: University Deep Dive": lambda: university_deep_dive.render(df_full),
+    ":material/school: College / Program Deep Dive": lambda: college_program_deep_dive.render(df_full),
+    ":material/groups: Emirati vs Expats": lambda: emirati_vs_expats.render(df_full, display_outcome),
+    ":material/flight_takeoff: Students Abroad": lambda: students_abroad.render(df_full, display_outcome),
+    ":material/warning: At-Risk Students": lambda: at_risk.render(df, display_outcome),
+    ":material/manage_search: Student Deep-Dive": lambda: student_deep_dive.render(
         df, df_full, display_outcome, OUTCOME_DISPLAY_ORDER
     ),
-    "🤖 Predict New Student": lambda: predict_new_student.render(
+    ":material/psychology: Predict New Student": lambda: predict_new_student.render(
         display_outcome, OUTCOME_DISPLAY_ORDER
     ),
-    "📉 Model Performance": lambda: model_performance.render(
+    ":material/monitoring: Model Performance": lambda: model_performance.render(
         df_full, get_trainer, display_outcome
     ),
 }

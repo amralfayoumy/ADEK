@@ -7,7 +7,7 @@ from dashboard.ui import dark_layout
 
 
 def render(df_full, display_outcome):
-    st.markdown("# 🇦🇪 Emirati vs Expat Student Performance")
+    st.markdown("# :material/groups: Emirati vs Expat Student Performance")
     st.markdown("Comparative analysis across all metrics — domestic Emiratis vs expatriate students.")
 
     ev_df = df_full[df_full["Student_Type"].isin(["Emirati", "Expat"])].copy()
@@ -29,12 +29,12 @@ def render(df_full, display_outcome):
             "Debtor %": f"{grp['Debtor'].mean()*100:.1f}%",
         }
 
-    cmp_df = pd.DataFrame([grp_kpis(em), grp_kpis(ex)], index=["🇦🇪 Emirati", "👤 Expat"]).T
+    cmp_df = pd.DataFrame([grp_kpis(em), grp_kpis(ex)], index=["Emirati", "Expat"]).T
     st.dataframe(cmp_df, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Outcomes", "📐 Academic", "💰 Financial", "🏛️ By University"])
+    tab1, tab2, tab3, tab4 = st.tabs([":material/pie_chart: Outcomes", ":material/school: Academic", ":material/account_balance_wallet: Financial", ":material/account_balance: By University"])
 
     with tab1:
         r1, r2 = st.columns(2)

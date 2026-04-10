@@ -3,17 +3,17 @@ import importlib.util
 HAS_STATSMODELS = importlib.util.find_spec("statsmodels") is not None
 
 PAGE_OPTIONS = [
-    "📊 Overview",
-    "🌍 Macro-Economic",
-    "🏆 University Comparison",
-    "🏛️ University Deep Dive",
-    "🎓 College / Program Deep Dive",
-    "🇦🇪 Emirati vs Expats",
-    "✈️ Students Abroad",
-    "🚨 At-Risk Students",
-    "🔍 Student Deep-Dive",
-    "🤖 Predict New Student",
-    "📉 Model Performance",
+    ":material/insights: Overview",
+    ":material/public: Macro-Economic",
+    ":material/balance: University Comparison",
+    ":material/account_balance: University Deep Dive",
+    ":material/school: College / Program Deep Dive",
+    ":material/groups: Emirati vs Expats",
+    ":material/flight_takeoff: Students Abroad",
+    ":material/warning: At-Risk Students",
+    ":material/manage_search: Student Deep-Dive",
+    ":material/psychology: Predict New Student",
+    ":material/monitoring: Model Performance",
 ]
 PAGES = PAGE_OPTIONS
 

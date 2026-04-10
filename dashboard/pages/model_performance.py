@@ -9,7 +9,7 @@ from dashboard.ui import dark_layout
 
 
 def render(df_full, get_trainer, display_outcome):
-    st.markdown("# 📉 Model Performance Analysis")
+    st.markdown("# :material/monitoring: Model Performance Analysis")
 
     y_true = df_full["Target"]
     y_pred = df_full["Predicted_Target"]
