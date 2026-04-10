@@ -43,10 +43,30 @@ inject_global_styles()
 
 
 with st.sidebar:
-    st.markdown("## :material/school: UAE Student Analytics")
+    st.markdown("## :material/school: NEXUS AI")
     st.markdown("---")
 
     page = st.radio("Navigation", PAGES, label_visibility="collapsed")
+
+    st.markdown("---")
+
+    data_ok = os.path.exists(DATA_CSV)
+    model_ok = not need_training()
+
+    st.markdown("### Status")
+    st.markdown(f"{':material/check_circle:' if data_ok else ':material/error:'} dataset `data.csv`")
+    st.markdown(f"{':material/check_circle:' if model_ok else ':material/schedule:'} trained model")
+
+    if not data_ok:
+        st.warning("Place `data.csv` in the same folder, then refresh.")
+        st.stop()
+
+    if not model_ok:
+        if st.button(":material/play_arrow: Train Model Now", type="primary", width="stretch"):
+            run_training()
+            st.rerun()
+        st.info("Click the button above to train the model on first run.")
+        st.stop()
 
     st.markdown("---")
 
@@ -82,26 +102,6 @@ with st.sidebar:
     risk_filter = st.multiselect(
         "Risk Level", ["High", "Medium", "Low"], default=["High", "Medium", "Low"]
     )
-
-    st.markdown("---")
-
-    data_ok = os.path.exists(DATA_CSV)
-    model_ok = not need_training()
-
-    st.markdown("### Status")
-    st.markdown(f"{':material/check_circle:' if data_ok else ':material/error:'} dataset `data.csv`")
-    st.markdown(f"{':material/check_circle:' if model_ok else ':material/schedule:'} trained model")
-
-    if not data_ok:
-        st.warning("Place `data.csv` in the same folder, then refresh.")
-        st.stop()
-
-    if not model_ok:
-        if st.button(":material/play_arrow: Train Model Now", type="primary", use_container_width=True):
-            run_training()
-            st.rerun()
-        st.info("Click the button above to train the model on first run.")
-        st.stop()
 
     st.markdown("---")
     st.caption("Model: Stacking ensemble\nXGB + LGBM + CatBoost -> XGB meta")

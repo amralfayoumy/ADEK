@@ -50,7 +50,7 @@ def render(df_full):
         )
         dark_layout(fig_risk_u, height=340)
         fig_risk_u.update_traces(textposition="outside")
-        r1.plotly_chart(fig_risk_u, use_container_width=True)
+        r1.plotly_chart(fig_risk_u, width="stretch")
 
         coll_risk = (
             udf.groupby("College")
@@ -74,7 +74,7 @@ def render(df_full):
             color_discrete_map={"Dropout Rate": "#f87171", "High Risk %": "#fbbf24"},
         )
         dark_layout(fig_coll, height=340)
-        r2.plotly_chart(fig_coll, use_container_width=True)
+        r2.plotly_chart(fig_coll, width="stretch")
 
         r3, r4 = st.columns(2)
 
@@ -91,7 +91,7 @@ def render(df_full):
                 title="Student Type Composition",
             )
             dark_layout(fig_stype, height=320)
-            r3.plotly_chart(fig_stype, use_container_width=True)
+            r3.plotly_chart(fig_stype, width="stretch")
         else:
             r3.info("Student-type data is unavailable for the selected filters.")
 
@@ -106,7 +106,7 @@ def render(df_full):
             opacity=0.75,
         )
         dark_layout(fig_hist_u, height=320)
-        r4.plotly_chart(fig_hist_u, use_container_width=True)
+        r4.plotly_chart(fig_hist_u, width="stretch")
 
     with tab_funnel:
         years = sorted(udf["Enrollment_Year"].dropna().unique())
@@ -154,7 +154,7 @@ def render(df_full):
             yaxis_title="Students",
         )
         dark_layout(fig_funnel, height=420)
-        st.plotly_chart(fig_funnel, use_container_width=True)
+        st.plotly_chart(fig_funnel, width="stretch")
 
         cohort_n = len(udf)
         outcome_counts = (
@@ -224,7 +224,7 @@ def render(df_full):
         )
         fig_sk.update_layout(title=f"Overall Student Journey Sankey – {sel_uni}")
         dark_layout(fig_sk, height=430)
-        st.plotly_chart(fig_sk, use_container_width=True)
+        st.plotly_chart(fig_sk, width="stretch")
 
     with tab_reasons:
         dropout_df = udf[(udf["Dropout_Reason"] != "") & (udf["Dropout_Reason"].notna())].copy()
@@ -244,7 +244,7 @@ def render(df_full):
                 color_discrete_sequence=px.colors.qualitative.Set3,
             )
             dark_layout(fig_reason)
-            r1.plotly_chart(fig_reason, use_container_width=True)
+            r1.plotly_chart(fig_reason, width="stretch")
 
             reason_stype = dropout_df.groupby(["Dropout_Reason", "Student_Type"]).size().reset_index(name="Count")
             fig_rs = px.bar(
@@ -258,7 +258,7 @@ def render(df_full):
             )
             dark_layout(fig_rs, height=380)
             fig_rs.update_layout(xaxis_tickangle=-25)
-            r2.plotly_chart(fig_rs, use_container_width=True)
+            r2.plotly_chart(fig_rs, width="stretch")
 
             st.caption(
                 "Dropout reasons by college/program are consolidated in College / Program Deep Dive for operational planning."
@@ -286,4 +286,4 @@ def render(df_full):
         )
         dark_layout(fig_trend, height=400)
         enforce_integer_year_axis(fig_trend, axis="x")
-        st.plotly_chart(fig_trend, use_container_width=True)
+        st.plotly_chart(fig_trend, width="stretch")

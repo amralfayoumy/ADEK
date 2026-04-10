@@ -51,7 +51,7 @@ def render(df_full):
             labels={"value": "Rate", "variable": "Metric"},
         )
         dark_layout(fig_do_vs_gr, height=380)
-        st.plotly_chart(fig_do_vs_gr, use_container_width=True)
+        st.plotly_chart(fig_do_vs_gr, width="stretch")
 
         r1, r2 = st.columns(2)
 
@@ -66,7 +66,7 @@ def render(df_full):
         )
         dark_layout(fig_do, height=380)
         fig_do.update_layout(showlegend=False)
-        r1.plotly_chart(fig_do, use_container_width=True)
+        r1.plotly_chart(fig_do, width="stretch")
 
         fig_gr = px.bar(
             uni_agg.sort_values("Grad_Rate", ascending=False),
@@ -79,7 +79,7 @@ def render(df_full):
         )
         dark_layout(fig_gr, height=380)
         fig_gr.update_layout(showlegend=False)
-        r2.plotly_chart(fig_gr, use_container_width=True)
+        r2.plotly_chart(fig_gr, width="stretch")
 
         fig_hr = px.bar(
             uni_agg.sort_values("High_Risk", ascending=False),
@@ -92,7 +92,7 @@ def render(df_full):
         )
         dark_layout(fig_hr, height=380)
         fig_hr.update_layout(showlegend=False)
-        r1.plotly_chart(fig_hr, use_container_width=True)
+        r1.plotly_chart(fig_hr, width="stretch")
 
         fig_ag = px.bar(
             uni_agg.sort_values("Avg_Grade", ascending=False),
@@ -105,7 +105,7 @@ def render(df_full):
         )
         dark_layout(fig_ag, height=380)
         fig_ag.update_layout(showlegend=False)
-        r2.plotly_chart(fig_ag, use_container_width=True)
+        r2.plotly_chart(fig_ag, width="stretch")
 
     with tab_radar:
         metrics = ["Dropout_Rate", "Grad_Rate", "High_Risk", "Avg_Risk", "Avg_Grade"]
@@ -137,7 +137,7 @@ def render(df_full):
             height=520,
         )
         dark_layout(fig_radar_cmp)
-        st.plotly_chart(fig_radar_cmp, use_container_width=True)
+        st.plotly_chart(fig_radar_cmp, width="stretch")
 
     with tab_trend:
         trend_df = cmp_df.copy()
@@ -177,7 +177,7 @@ def render(df_full):
             categoryorder="array",
             categoryarray=[str(y) for y in year_categories],
         )
-        st.plotly_chart(fig_trend_all, use_container_width=True)
+        st.plotly_chart(fig_trend_all, width="stretch")
 
         if {"Unemployment rate", "GDP", "Risk_Score"}.issubset(cmp_df.columns):
             st.caption("Macro-economic charts were moved to the dedicated Macro-Economic page.")
@@ -200,7 +200,7 @@ def render(df_full):
             )
             .background_gradient(subset=["Dropout_Rate"], cmap="Reds")
             .background_gradient(subset=["Grad_Rate"], cmap="Greens"),
-            use_container_width=True,
+            width="stretch",
         )
 
         comp_data = uni_agg[["University", "Emirati_Pct", "Expat_Pct", "Abroad_Pct"]].melt(
@@ -218,7 +218,7 @@ def render(df_full):
             labels={"Pct": "Proportion"},
         )
         dark_layout(fig_comp, height=380)
-        st.plotly_chart(fig_comp, use_container_width=True)
+        st.plotly_chart(fig_comp, width="stretch")
 
         if "Curricular units 2nd sem (grade)" in cmp_df.columns:
             fig_uni_grade = px.box(
@@ -230,7 +230,7 @@ def render(df_full):
                 color_discrete_sequence=UNI_COLORS,
             )
             dark_layout(fig_uni_grade, height=420)
-            st.plotly_chart(fig_uni_grade, use_container_width=True)
+            st.plotly_chart(fig_uni_grade, width="stretch")
 
     with tab_scatter:
         fig_scat_cmp = px.scatter(
@@ -246,7 +246,7 @@ def render(df_full):
         )
         fig_scat_cmp.update_traces(textposition="top center")
         dark_layout(fig_scat_cmp, height=500)
-        st.plotly_chart(fig_scat_cmp, use_container_width=True)
+        st.plotly_chart(fig_scat_cmp, width="stretch")
 
         fig_scat2 = px.scatter(
             uni_agg,
@@ -260,4 +260,4 @@ def render(df_full):
         )
         fig_scat2.update_traces(textposition="top center")
         dark_layout(fig_scat2, height=500)
-        st.plotly_chart(fig_scat2, use_container_width=True)
+        st.plotly_chart(fig_scat2, width="stretch")

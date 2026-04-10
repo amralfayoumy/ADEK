@@ -72,7 +72,7 @@ def render(display_outcome, outcome_display_order):
         inflation = e2.number_input("Inflation Rate (%)", -5.0, 10.0, 1.4)
         gdp = e3.number_input("GDP", -5.0, 5.0, 1.74)
 
-        submitted = st.form_submit_button(":material/auto_fix_high: Predict Risk", type="primary", use_container_width=True)
+        submitted = st.form_submit_button(":material/auto_fix_high: Predict Risk", type="primary", width="stretch")
 
     if submitted:
         row_data = {c: 0 for c in feat_cols}
@@ -116,15 +116,26 @@ def render(display_outcome, outcome_display_order):
                 "GDP": gdp,
             }
         )
-        x_new = pd.DataFrame([row_data])[feat_cols]
-        n_cls = 3
-        stacked = np.zeros((1, n_cls * len(art["base_models"])))
-        for m_idx, (_, model) in enumerate(art["base_models"]):
-            probs = model.predict_proba(x_new)
-            stacked[:, m_idx * n_cls : (m_idx + 1) * n_cls] = probs
+        x_seed = pd.DataFrame([row_data])
+        if hasattr(mt, "prepare_feature_matrix"):
+            x_new = mt.prepare_feature_matrix(x_seed, art, feat_cols)
+        else:
+            x_new = x_seed.reindex(columns=feat_cols, fill_value=0)
 
-        pred_encoded = art["meta_model"].predict(stacked)[0]
-        pred_proba = art["meta_model"].predict_proba(stacked)[0]
+        ensemble_mode = art.get("ensemble_mode", "stacking")
+        if ensemble_mode == "stacking" and art.get("meta_model") is not None and len(art["base_models"]) >= 2:
+            n_cls = 3
+            stacked = np.zeros((1, n_cls * len(art["base_models"])))
+            for m_idx, (_, model) in enumerate(art["base_models"]):
+                probs = model.predict_proba(x_new)
+                stacked[:, m_idx * n_cls : (m_idx + 1) * n_cls] = probs
+
+            pred_encoded = art["meta_model"].predict(stacked)[0]
+            pred_proba = art["meta_model"].predict_proba(stacked)[0]
+        else:
+            _base_name, base_model = art["base_models"][0]
+            pred_encoded = base_model.predict(x_new)[0]
+            pred_proba = base_model.predict_proba(x_new)[0]
         pred_label = le_obj.inverse_transform([pred_encoded])[0]
         pred_label_display = display_outcome(pred_label)
         cls_list = list(le_obj.classes_)
@@ -172,4 +183,4 @@ def render(display_outcome, outcome_display_order):
             xaxis=dict(range=[0, 1.1], tickformat=".0%"),
             margin=dict(t=20, b=10),
         )
-        st.plotly_chart(fig_new, use_container_width=True)
+        st.plotly_chart(fig_new, width="stretch")

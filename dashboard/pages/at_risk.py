@@ -139,7 +139,7 @@ def render(df, display_outcome):
 
         st.dataframe(
             risk_styler,
-            use_container_width=True,
+            width="stretch",
             height=480,
             hide_index=True,
         )
@@ -152,7 +152,7 @@ def render(df, display_outcome):
             title="High-Risk Students per University",
         )
         dark_layout(fig_uni_risk, height=320)
-        st.plotly_chart(fig_uni_risk, use_container_width=True)
+        st.plotly_chart(fig_uni_risk, width="stretch")
 
     with tab_engage:
         low_eng = df[df["Engagement_Flag"] == "Low Engagement"]
@@ -237,7 +237,7 @@ def render(df, display_outcome):
 
         st.dataframe(
             low_eng_styler,
-            use_container_width=True,
+            width="stretch",
             height=420,
             hide_index=True,
         )

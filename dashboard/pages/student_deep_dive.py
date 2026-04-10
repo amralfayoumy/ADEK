@@ -66,7 +66,7 @@ def render(df, df_full, display_outcome, outcome_display_order):
         margin=dict(t=40, b=10),
     )
     dark_layout(fig_prob, height=200)
-    st.plotly_chart(fig_prob, use_container_width=True)
+    st.plotly_chart(fig_prob, width="stretch")
 
     st.markdown("<p class='section-header'>Student Profile</p>", unsafe_allow_html=True)
     p1, p2, p3 = st.columns(3)
@@ -140,7 +140,7 @@ def render(df, df_full, display_outcome, outcome_display_order):
         height=380,
     )
     dark_layout(fig_radar)
-    st.plotly_chart(fig_radar, use_container_width=True)
+    st.plotly_chart(fig_radar, width="stretch")
 
     st.markdown("<p class='section-header'>🤖 AI-Suggested Interventions</p>", unsafe_allow_html=True)
 

@@ -26,9 +26,9 @@ def render(df):
     st.markdown("<br>", unsafe_allow_html=True)
 
     g1, g2, g3 = st.columns(3)
-    g1.plotly_chart(gauge_chart(dropout_rate, "Predicted Dropout Rate", "#f87171"), use_container_width=True)
-    g2.plotly_chart(gauge_chart(enrolled_rt, "Predicted Pending Outcome Rate", "#fbbf24"), use_container_width=True)
-    g3.plotly_chart(gauge_chart(grad_rate, "Predicted Graduation Rate", "#34d399"), use_container_width=True)
+    g1.plotly_chart(gauge_chart(dropout_rate, "Predicted Dropout Rate", "#f87171"), width="stretch")
+    g2.plotly_chart(gauge_chart(enrolled_rt, "Predicted Pending Outcome Rate", "#fbbf24"), width="stretch")
+    g3.plotly_chart(gauge_chart(grad_rate, "Predicted Graduation Rate", "#34d399"), width="stretch")
 
     row1_l, row1_r = st.columns(2)
 
@@ -44,7 +44,7 @@ def render(df):
         title="Predicted Outcome Distribution",
     )
     dark_layout(fig_pie)
-    row1_l.plotly_chart(fig_pie, use_container_width=True)
+    row1_l.plotly_chart(fig_pie, width="stretch")
 
     risk_dist = df["Risk_Label"].value_counts().reindex(["High", "Medium", "Low"]).reset_index()
     risk_dist.columns = ["Risk", "Count"]
@@ -60,7 +60,7 @@ def render(df):
     dark_layout(fig_risk)
     fig_risk.update_layout(showlegend=False)
     fig_risk.update_traces(textposition="outside")
-    row1_r.plotly_chart(fig_risk, use_container_width=True)
+    row1_r.plotly_chart(fig_risk, width="stretch")
 
     row2_l, row2_r = st.columns(2)
 
@@ -76,7 +76,7 @@ def render(df):
         opacity=0.75,
     )
     dark_layout(fig_hist)
-    row2_l.plotly_chart(fig_hist, use_container_width=True)
+    row2_l.plotly_chart(fig_hist, width="stretch")
 
     if "Student_Type" in df.columns and not df.empty:
         seg_risk = (
@@ -99,7 +99,7 @@ def render(df):
             labels={"Dropout_Rate": "Rate"},
         )
         dark_layout(fig_seg)
-        row2_r.plotly_chart(fig_seg, use_container_width=True)
+        row2_r.plotly_chart(fig_seg, width="stretch")
     else:
         row2_r.info("Student-type segmentation is unavailable in the current dataset.")
 
@@ -115,7 +115,7 @@ def render(df):
         title="2nd Sem Grade by Predicted Outcome",
     )
     dark_layout(fig_box)
-    ga1.plotly_chart(fig_box, use_container_width=True)
+    ga1.plotly_chart(fig_box, width="stretch")
 
     fig_scatter = px.scatter(
         df.sample(min(800, len(df)), random_state=42),
@@ -127,4 +127,4 @@ def render(df):
         title="1st vs 2nd Semester Grades",
     )
     dark_layout(fig_scatter)
-    ga2.plotly_chart(fig_scatter, use_container_width=True)
+    ga2.plotly_chart(fig_scatter, width="stretch")

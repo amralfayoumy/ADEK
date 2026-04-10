@@ -25,7 +25,7 @@ def render(df):
         title="Unemployment Rate vs Dropout Risk",
     )
     dark_layout(fig_unemp, height=380)
-    m1.plotly_chart(fig_unemp, use_container_width=True)
+    m1.plotly_chart(fig_unemp, width="stretch")
 
     fig_gdp = px.scatter(
         df,
@@ -38,7 +38,7 @@ def render(df):
         title="GDP vs Dropout Risk",
     )
     dark_layout(fig_gdp, height=380)
-    m2.plotly_chart(fig_gdp, use_container_width=True)
+    m2.plotly_chart(fig_gdp, width="stretch")
 
     fig_infl = px.scatter(
         df,
@@ -51,4 +51,4 @@ def render(df):
         title="Inflation Rate vs Dropout Risk",
     )
     dark_layout(fig_infl, height=380)
-    st.plotly_chart(fig_infl, use_container_width=True)
+    st.plotly_chart(fig_infl, width="stretch")

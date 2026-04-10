@@ -51,7 +51,7 @@ def render(df_full):
             text_auto=".1%",
         )
         dark_layout(fig_prog_d, height=360)
-        r1.plotly_chart(fig_prog_d, use_container_width=True)
+        r1.plotly_chart(fig_prog_d, width="stretch")
 
         fig_prog_g2 = px.bar(
             prog_stats,
@@ -63,7 +63,7 @@ def render(df_full):
             text_auto=".1%",
         )
         dark_layout(fig_prog_g2, height=360)
-        r2.plotly_chart(fig_prog_g2, use_container_width=True)
+        r2.plotly_chart(fig_prog_g2, width="stretch")
 
         top_prog_grade = (
             cp_df.groupby("Program")
@@ -83,7 +83,7 @@ def render(df_full):
         )
         dark_layout(fig_prog_grade, height=380)
         fig_prog_grade.update_layout(xaxis_tickangle=-30)
-        st.plotly_chart(fig_prog_grade, use_container_width=True)
+        st.plotly_chart(fig_prog_grade, width="stretch")
 
         if "Course" in cp_df.columns:
             cp_df_plot = cp_df.copy()
@@ -110,7 +110,7 @@ def render(df_full):
             )
             dark_layout(fig_course_risk, height=420)
             fig_course_risk.update_layout(yaxis_title="")
-            st.plotly_chart(fig_course_risk, use_container_width=True)
+            st.plotly_chart(fig_course_risk, width="stretch")
 
         st.dataframe(
             prog_stats.style.format(
@@ -121,7 +121,7 @@ def render(df_full):
                     "Avg_Grade": "{:.2f}",
                 }
             ).background_gradient(subset=["Dropout_Rate"], cmap="Reds"),
-            use_container_width=True,
+            width="stretch",
         )
 
     with tab_risk_heat:
@@ -135,7 +135,7 @@ def render(df_full):
             text_auto=True,
         )
         dark_layout(fig_heat, height=380)
-        st.plotly_chart(fig_heat, use_container_width=True)
+        st.plotly_chart(fig_heat, width="stretch")
 
         drop_cp = cp_df[(cp_df["Dropout_Reason"] != "") & (cp_df["Dropout_Reason"].notna())]
         if not drop_cp.empty:
@@ -148,7 +148,7 @@ def render(df_full):
                 text_auto=True,
             )
             dark_layout(fig_heat2, height=380)
-            st.plotly_chart(fig_heat2, use_container_width=True)
+            st.plotly_chart(fig_heat2, width="stretch")
 
     with tab_grade:
         r1, r2 = st.columns(2)
@@ -161,7 +161,7 @@ def render(df_full):
             title="2nd Semester Grade by Program",
         )
         dark_layout(fig_g_prog, height=380)
-        r1.plotly_chart(fig_g_prog, use_container_width=True)
+        r1.plotly_chart(fig_g_prog, width="stretch")
 
         fig_g_out = px.violin(
             cp_df,
@@ -173,7 +173,7 @@ def render(df_full):
             title="Grade by Predicted Outcome",
         )
         dark_layout(fig_g_out, height=380)
-        r2.plotly_chart(fig_g_out, use_container_width=True)
+        r2.plotly_chart(fig_g_out, width="stretch")
 
         fig_scatter_cp = px.scatter(
             cp_df.sample(min(600, len(cp_df)), random_state=42),
@@ -186,7 +186,7 @@ def render(df_full):
             title="1st vs 2nd Sem Grades by Program & Outcome",
         )
         dark_layout(fig_scatter_cp, height=420)
-        st.plotly_chart(fig_scatter_cp, use_container_width=True)
+        st.plotly_chart(fig_scatter_cp, width="stretch")
 
     with tab_stype:
         r1, r2 = st.columns(2)
@@ -202,7 +202,7 @@ def render(df_full):
             title="Student Type by Program",
         )
         dark_layout(fig_stype_p, height=360)
-        r1.plotly_chart(fig_stype_p, use_container_width=True)
+        r1.plotly_chart(fig_stype_p, width="stretch")
 
         stype_drop = cp_df.groupby(["Student_Type", "Predicted_Target_Display"]).size().reset_index(name="Count")
         fig_stype_out = px.bar(
@@ -215,4 +215,4 @@ def render(df_full):
             title="Outcomes by Student Type",
         )
         dark_layout(fig_stype_out, height=360)
-        r2.plotly_chart(fig_stype_out, use_container_width=True)
+        r2.plotly_chart(fig_stype_out, width="stretch")

@@ -30,7 +30,7 @@ def render(df_full, display_outcome):
         }
 
     cmp_df = pd.DataFrame([grp_kpis(em), grp_kpis(ex)], index=["Emirati", "Expat"]).T
-    st.dataframe(cmp_df, use_container_width=True)
+    st.dataframe(cmp_df, width="stretch")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -51,7 +51,7 @@ def render(df_full, display_outcome):
             title="Outcome Distribution (Count)",
         )
         dark_layout(fig_out, height=360)
-        r1.plotly_chart(fig_out, use_container_width=True)
+        r1.plotly_chart(fig_out, width="stretch")
 
         risk_grp = ev_df.groupby(["Student_Type", "Risk_Label"]).size().reset_index(name="Count")
         fig_risk_ev = px.bar(
@@ -64,7 +64,7 @@ def render(df_full, display_outcome):
             title="Risk Level Distribution",
         )
         dark_layout(fig_risk_ev, height=360)
-        r2.plotly_chart(fig_risk_ev, use_container_width=True)
+        r2.plotly_chart(fig_risk_ev, width="stretch")
 
         fig_violin = px.violin(
             ev_df,
@@ -77,7 +77,7 @@ def render(df_full, display_outcome):
             labels={"Risk_Score": "P(Dropout)"},
         )
         dark_layout(fig_violin, height=360)
-        st.plotly_chart(fig_violin, use_container_width=True)
+        st.plotly_chart(fig_violin, width="stretch")
 
     with tab2:
         r1, r2 = st.columns(2)
@@ -92,7 +92,7 @@ def render(df_full, display_outcome):
             title="2nd Semester Grade Distribution",
         )
         dark_layout(fig_grade, height=360)
-        r1.plotly_chart(fig_grade, use_container_width=True)
+        r1.plotly_chart(fig_grade, width="stretch")
 
         fig_approved = px.histogram(
             ev_df,
@@ -104,7 +104,7 @@ def render(df_full, display_outcome):
             title="Units Approved – 2nd Semester",
         )
         dark_layout(fig_approved, height=360)
-        r2.plotly_chart(fig_approved, use_container_width=True)
+        r2.plotly_chart(fig_approved, width="stretch")
 
         st.caption("Program-level grade benchmarking is consolidated in College / Program Deep Dive.")
 
@@ -128,7 +128,7 @@ def render(df_full, display_outcome):
             labels={"Rate": "Proportion"},
         )
         dark_layout(fig_fin, height=360)
-        r1.plotly_chart(fig_fin, use_container_width=True)
+        r1.plotly_chart(fig_fin, width="stretch")
 
         ev_df["Has Scholarship"] = ev_df["Scholarship holder"].map({1: "Yes", 0: "No"})
         fig_sch = px.box(
@@ -140,7 +140,7 @@ def render(df_full, display_outcome):
             title="Scholarship Impact on Dropout Risk",
         )
         dark_layout(fig_sch, height=360)
-        r2.plotly_chart(fig_sch, use_container_width=True)
+        r2.plotly_chart(fig_sch, width="stretch")
 
     with tab4:
         uni_ev = (
@@ -166,7 +166,7 @@ def render(df_full, display_outcome):
             title="Dropout Rate: Emirati vs Expat by University",
         )
         dark_layout(fig_uni_ev, height=380)
-        st.plotly_chart(fig_uni_ev, use_container_width=True)
+        st.plotly_chart(fig_uni_ev, width="stretch")
 
         fig_uni_g = px.bar(
             uni_ev,
@@ -178,4 +178,4 @@ def render(df_full, display_outcome):
             title="Graduation Rate: Emirati vs Expat by University",
         )
         dark_layout(fig_uni_g, height=380)
-        st.plotly_chart(fig_uni_g, use_container_width=True)
+        st.plotly_chart(fig_uni_g, width="stretch")
