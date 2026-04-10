@@ -43,10 +43,33 @@ streamlit run app.py
 ```
 
 Open **http://localhost:8501** in your browser.  
-On first launch, click **"▶ Train Model Now"** in the sidebar.  
+If model artefacts are missing, click **"▶ Train Model Now"** in the sidebar.  
 Training takes ~2–5 minutes (saved to `models/` for all future runs).
 
-### 4 – Publish via Cloudflare (public URL)
+### 4 – Permanent deployment on Streamlit Community Cloud
+
+This repository is already prepared for Community Cloud:
+
+- App entrypoint: `app.py`
+- Python runtime: `runtime.txt` (`python-3.11`)
+- System dependency: `packages.txt` (`libgomp1`)
+- Streamlit config: `.streamlit/config.toml`
+- Pretrained model artefacts are stored under `models/` so the cloud app can boot without retraining
+
+#### One-time publish steps
+
+1. Push your latest `main` branch to GitHub.
+2. Open https://share.streamlit.io and sign in with GitHub.
+3. Click **Create app**.
+4. Choose:
+  - Repository: `amralfayoumy/ADEK`
+  - Branch: `main`
+  - Main file path: `app.py`
+5. Click **Deploy**.
+
+After build completes, Streamlit provides a stable hosted URL and keeps redeploying automatically on every push to `main`.
+
+### 5 – Publish via Cloudflare (public URL)
 
 #### Install `cloudflared`
 
