@@ -40,3 +40,9 @@ Thumbs.db
 # Misc
 .cache/
 *.tmp
+dashboard/pages/__pycache__/at_risk.cpython-312.pyc
+dashboard/pages/__pycache__/college_program_deep_dive.cpython-312.pyc
+dashboard/pages/__pycache__/emirati_vs_expats.cpython-312.pyc
+dashboard/pages/__pycache__/students_abroad.cpython-312.pyc
+dashboard/pages/__pycache__/university_comparison.cpython-312.pyc
+dashboard/pages/__pycache__/university_deep_dive.cpython-312.pyc
