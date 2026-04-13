@@ -157,6 +157,6 @@ def persist_streamlit_tabs(page_key, tab_labels):
 }})();
 </script>
     """,
-    height=0,
+        height="content",
     width="stretch",
     )
