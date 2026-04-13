@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP
-from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persistent_tab_selector
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persist_streamlit_tabs
 
 
 def render(df_full, display_outcome):
@@ -34,9 +34,10 @@ def render(df_full, display_outcome):
         ":material/account_balance: By University",
         ":material/school: By Program",
     ]
-    active_tab = persistent_tab_selector("students_abroad_active_tab", tab_options)
+    tab_overview, tab_compare, tab_uni, tab_prog = st.tabs(tab_options)
+    persist_streamlit_tabs("students_abroad_active_tab", tab_options)
 
-    if active_tab == tab_options[0]:
+    with tab_overview:
         c1, c2, c3 = st.columns(3)
         c1.metric("Pending Outcome %", f"{(abroad_df['Predicted_Target']=='Enrolled').mean()*100:.1f}%")
         c2.metric("Dropout %", f"{(abroad_df['Predicted_Target']=='Dropout').mean()*100:.1f}%")
@@ -96,7 +97,7 @@ def render(df_full, display_outcome):
         enforce_integer_year_axis(fig_trend_ab, axis="x")
         r2.plotly_chart(fig_trend_ab, width="stretch")
 
-    if active_tab == tab_options[1]:
+    with tab_compare:
         st.markdown("### Abroad Emiratis vs Domestic Emiratis")
 
         def ab_kpis(grp, label):
@@ -168,7 +169,7 @@ def render(df_full, display_outcome):
         fig_out_both.update_yaxes(tickformat=".0%", range=[0, 1], title="Percentage")
         st.plotly_chart(fig_out_both, width="stretch")
 
-    if active_tab == tab_options[2]:
+    with tab_uni:
         uni_ab = (
             abroad_df.groupby("University")
             .agg(
@@ -198,7 +199,7 @@ def render(df_full, display_outcome):
             width="stretch",
         )
 
-    if active_tab == tab_options[3]:
+    with tab_prog:
         prog_ab = (
             abroad_df.groupby("Program")
             .agg(

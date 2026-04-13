@@ -2,7 +2,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.feature_decoder import decode_dataframe_features
-from dashboard.ui import dark_layout, persistent_tab_selector
+from dashboard.ui import dark_layout, persist_streamlit_tabs
 
 
 def _financial_risk_level(row):
@@ -38,9 +38,10 @@ def render(df, display_outcome):
     st.markdown("# :material/warning: Early Warning System")
 
     tab_options = [":material/error: Dropout Risk", ":material/sentiment_dissatisfied: Low Engagement"]
-    active_tab = persistent_tab_selector("at_risk_active_tab", tab_options)
+    tab_dropout, tab_engage = st.tabs(tab_options)
+    persist_streamlit_tabs("at_risk_active_tab", tab_options)
 
-    if active_tab == tab_options[0]:
+    with tab_dropout:
         high_risk = df[df["Risk_Label"] == "High"].sort_values("Risk_Score", ascending=False)
         st.markdown(
             f"<p class='section-header'>Showing {len(high_risk)} high-risk students</p>",
@@ -155,7 +156,7 @@ def render(df, display_outcome):
         dark_layout(fig_uni_risk, height=320)
         st.plotly_chart(fig_uni_risk, width="stretch")
 
-    if active_tab == tab_options[1]:
+    with tab_engage:
         low_eng = df[df["Engagement_Flag"] == "Low Engagement"]
         st.markdown(
             f"<p class='section-header'>{len(low_eng)} low-engagement students detected</p>",

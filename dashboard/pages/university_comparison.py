@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 from dashboard.constants import UNI_COLORS
-from dashboard.ui import dark_layout, persistent_tab_selector
+from dashboard.ui import dark_layout, persist_streamlit_tabs
 
 
 def render(df_full):
@@ -43,9 +43,10 @@ def render(df_full):
         ":material/table_rows: Table",
         ":material/scatter_plot: Scatter",
     ]
-    active_tab = persistent_tab_selector("university_comparison_active_tab", tab_options)
+    tab_bar, tab_radar, tab_trend, tab_table, tab_scatter = st.tabs(tab_options)
+    persist_streamlit_tabs("university_comparison_active_tab", tab_options)
 
-    if active_tab == tab_options[0]:
+    with tab_bar:
         fig_do_vs_gr = px.bar(
             uni_agg,
             x="University",
@@ -112,7 +113,7 @@ def render(df_full):
         fig_ag.update_layout(showlegend=False)
         r2.plotly_chart(fig_ag, width="stretch")
 
-    if active_tab == tab_options[1]:
+    with tab_radar:
         metrics = ["Dropout_Rate", "Grad_Rate", "High_Risk", "Avg_Risk", "Avg_Grade"]
         radar_df = uni_agg[["University"] + metrics].copy()
         for m in metrics:
@@ -144,7 +145,7 @@ def render(df_full):
         dark_layout(fig_radar_cmp)
         st.plotly_chart(fig_radar_cmp, width="stretch")
 
-    if active_tab == tab_options[2]:
+    with tab_trend:
         trend_df = cmp_df.copy()
         trend_df["Enrollment_Year"] = pd.to_numeric(
             trend_df["Enrollment_Year"], errors="coerce"
@@ -187,7 +188,7 @@ def render(df_full):
         if {"Unemployment rate", "GDP", "Risk_Score"}.issubset(cmp_df.columns):
             st.caption("Macro-economic charts were moved to the dedicated Macro-Economic page.")
 
-    if active_tab == tab_options[3]:
+    with tab_table:
         display_tbl = uni_agg.copy()
         st.dataframe(
             display_tbl.style.format(
@@ -237,7 +238,7 @@ def render(df_full):
             dark_layout(fig_uni_grade, height=420)
             st.plotly_chart(fig_uni_grade, width="stretch")
 
-    if active_tab == tab_options[4]:
+    with tab_scatter:
         fig_scat_cmp = px.scatter(
             uni_agg,
             x="Grad_Rate",

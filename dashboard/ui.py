@@ -1,5 +1,8 @@
+import json
+
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 
 from dashboard.constants import COURSE_MAP
 
@@ -71,17 +74,89 @@ def kpi(col, val, label, delta="", color="#60a5fa"):
     )
 
 
-def persistent_tab_selector(state_key, options, label="Section"):
-    if not options:
-        return None
+def persist_streamlit_tabs(page_key, tab_labels):
+        if not tab_labels:
+                return
 
-    if state_key not in st.session_state or st.session_state[state_key] not in options:
-        st.session_state[state_key] = options[0]
+        payload = json.dumps({"page_key": page_key, "labels": tab_labels})
+        components.html(
+                f"""
+<script>
+(() => {{
+    const cfg = {payload};
+    const storageKey = "streamlit_tab::" + cfg.page_key;
 
-    return st.radio(
-        label,
-        options,
-        key=state_key,
-        horizontal=True,
-        label_visibility="collapsed",
+    const normalizeExpected = (txt) =>
+        String(txt || "")
+            .replace(/:material\\/[^:]+:/g, "")
+            .replace(/\\s+/g, " ")
+            .trim()
+            .toLowerCase();
+
+    const normalizeActual = (txt) =>
+        String(txt || "")
+            .replace(/\\s+/g, " ")
+            .trim()
+            .toLowerCase();
+
+    function findMatchingTabs() {{
+        const parentDoc = window.parent && window.parent.document;
+        if (!parentDoc) return null;
+
+        const expected = cfg.labels.map(normalizeExpected);
+        const tabLists = Array.from(parentDoc.querySelectorAll('div[role="tablist"]'));
+
+        for (const tabList of tabLists) {{
+            const buttons = Array.from(tabList.querySelectorAll('button[role="tab"]'));
+            if (buttons.length !== expected.length) continue;
+
+            const actual = buttons.map((btn) => normalizeActual(btn.innerText));
+            const matches = expected.every((label, idx) => label && actual[idx].includes(label));
+            if (matches) return buttons;
+        }}
+
+        return null;
+    }}
+
+    function bindAndRestore() {{
+        const buttons = findMatchingTabs();
+        if (!buttons) return false;
+
+        buttons.forEach((btn, idx) => {{
+            if (btn.dataset.persistTabBound === "1") return;
+            btn.dataset.persistTabBound = "1";
+            btn.addEventListener("click", () => {{
+                try {{
+                    window.localStorage.setItem(storageKey, String(idx));
+                }} catch (e) {{}}
+            }});
+        }});
+
+        try {{
+            const raw = window.localStorage.getItem(storageKey);
+            if (raw === null) return true;
+
+            const savedIndex = Number.parseInt(raw, 10);
+            if (Number.isNaN(savedIndex) || savedIndex < 0 || savedIndex >= buttons.length) return true;
+
+            const activeIndex = buttons.findIndex((btn) => btn.getAttribute("aria-selected") === "true");
+            if (activeIndex !== savedIndex) {{
+                buttons[savedIndex].click();
+            }}
+        }} catch (e) {{}}
+
+        return true;
+    }}
+
+    let attempts = 0;
+    const timer = setInterval(() => {{
+        attempts += 1;
+        if (bindAndRestore() || attempts > 50) {{
+            clearInterval(timer);
+        }}
+    }}, 100);
+}})();
+</script>
+                """,
+                height=0,
     )

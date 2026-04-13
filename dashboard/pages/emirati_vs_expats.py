@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, persistent_tab_selector
+from dashboard.ui import dark_layout, persist_streamlit_tabs
 
 
 def render(df_full, display_outcome):
@@ -40,9 +40,10 @@ def render(df_full, display_outcome):
         ":material/account_balance_wallet: Financial",
         ":material/account_balance: By University",
     ]
-    active_tab = persistent_tab_selector("emirati_vs_expats_active_tab", tab_options)
+    tab1, tab2, tab3, tab4 = st.tabs(tab_options)
+    persist_streamlit_tabs("emirati_vs_expats_active_tab", tab_options)
 
-    if active_tab == tab_options[0]:
+    with tab1:
         r1, r2 = st.columns(2)
 
         outcome_data = ev_df.groupby(["Student_Type", "Predicted_Target"]).size().reset_index(name="Count")
@@ -85,7 +86,7 @@ def render(df_full, display_outcome):
         dark_layout(fig_violin, height=360)
         st.plotly_chart(fig_violin, width="stretch")
 
-    if active_tab == tab_options[1]:
+    with tab2:
         r1, r2 = st.columns(2)
 
         fig_grade = px.violin(
@@ -114,7 +115,7 @@ def render(df_full, display_outcome):
 
         st.caption("Program-level grade benchmarking is consolidated in College / Program Deep Dive.")
 
-    if active_tab == tab_options[2]:
+    with tab3:
         r1, r2 = st.columns(2)
 
         fin_metrics = (
@@ -148,7 +149,7 @@ def render(df_full, display_outcome):
         dark_layout(fig_sch, height=360)
         r2.plotly_chart(fig_sch, width="stretch")
 
-    if active_tab == tab_options[3]:
+    with tab4:
         uni_ev = (
             ev_df.groupby(["University", "Student_Type"])
             .apply(

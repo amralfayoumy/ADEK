@@ -2,7 +2,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, kpi, persistent_tab_selector, safe_course_name
+from dashboard.ui import dark_layout, kpi, persist_streamlit_tabs, safe_course_name
 
 
 def render(df_full):
@@ -27,9 +27,10 @@ def render(df_full):
         ":material/functions: Grade Analysis",
         ":material/groups: Student Types",
     ]
-    active_tab = persistent_tab_selector("college_program_deep_dive_active_tab", tab_options)
+    tab_prog, tab_risk_heat, tab_grade, tab_stype = st.tabs(tab_options)
+    persist_streamlit_tabs("college_program_deep_dive_active_tab", tab_options)
 
-    if active_tab == tab_options[0]:
+    with tab_prog:
         prog_stats = (
             cp_df.groupby("Program")
             .agg(
@@ -128,7 +129,7 @@ def render(df_full):
             width="stretch",
         )
 
-    if active_tab == tab_options[1]:
+    with tab_risk_heat:
         heat = cp_df.groupby(["Program", "Risk_Label"]).size().unstack(fill_value=0)
         heat = heat.reindex(columns=["High", "Medium", "Low"], fill_value=0)
         fig_heat = px.imshow(
@@ -154,7 +155,7 @@ def render(df_full):
             dark_layout(fig_heat2, height=380)
             st.plotly_chart(fig_heat2, width="stretch")
 
-    if active_tab == tab_options[2]:
+    with tab_grade:
         r1, r2 = st.columns(2)
 
         fig_g_prog = px.box(
@@ -192,7 +193,7 @@ def render(df_full):
         dark_layout(fig_scatter_cp, height=420)
         st.plotly_chart(fig_scatter_cp, width="stretch")
 
-    if active_tab == tab_options[3]:
+    with tab_stype:
         r1, r2 = st.columns(2)
 
         stype_prog = cp_df.groupby(["Program", "Student_Type"]).size().reset_index(name="Count")

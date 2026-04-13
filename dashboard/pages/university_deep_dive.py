@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persistent_tab_selector
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persist_streamlit_tabs
 
 
 def render(df_full):
@@ -36,9 +36,10 @@ def render(df_full):
         ":material/help: Dropout Reasons",
         ":material/trending_up: Year Trend",
     ]
-    active_tab = persistent_tab_selector("university_deep_dive_active_tab", tab_options)
+    tab_risk, tab_funnel, tab_reasons, tab_trend = st.tabs(tab_options)
+    persist_streamlit_tabs("university_deep_dive_active_tab", tab_options)
 
-    if active_tab == tab_options[0]:
+    with tab_risk:
         r1, r2 = st.columns(2)
 
         risk_cnt = udf["Risk_Label"].value_counts().reindex(["High", "Medium", "Low"]).reset_index()
@@ -112,7 +113,7 @@ def render(df_full):
         dark_layout(fig_hist_u, height=320)
         r4.plotly_chart(fig_hist_u, width="stretch")
 
-    if active_tab == tab_options[1]:
+    with tab_funnel:
         years = sorted(udf["Enrollment_Year"].dropna().unique())
 
         funnel_rows = []
@@ -230,7 +231,7 @@ def render(df_full):
         dark_layout(fig_sk, height=430)
         st.plotly_chart(fig_sk, width="stretch")
 
-    if active_tab == tab_options[2]:
+    with tab_reasons:
         dropout_df = udf[(udf["Dropout_Reason"] != "") & (udf["Dropout_Reason"].notna())].copy()
         if dropout_df.empty:
             st.info("No dropout reason data for this university in the current filter.")
@@ -268,7 +269,7 @@ def render(df_full):
                 "Dropout reasons by college/program are consolidated in College / Program Deep Dive for operational planning."
             )
 
-    if active_tab == tab_options[3]:
+    with tab_trend:
         trend = (
             udf.groupby("Enrollment_Year")
             .agg(
