@@ -17,7 +17,7 @@ import streamlit as st
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 from dashboard.constants import OUTCOME_DISPLAY_ORDER, OUTCOME_LABEL_MAP, OUTCOME_RAW_ORDER
-from dashboard.ui import dark_layout
+from dashboard.ui import dark_layout, semesterized_text
 
 
 DATA_PATH = "data.csv"
@@ -540,7 +540,7 @@ def _drift_watchlist(df):
             status = "Drift"
         rows.append(
             {
-                "Feature": col,
+                "Feature": semesterized_text(col),
                 "Baseline Year": baseline_year,
                 "Current Year": current_year,
                 "PSI": None if np.isnan(psi) else round(psi, 4),
@@ -1261,6 +1261,9 @@ def render(df_full, get_trainer, display_outcome):
                     table_df[model_col] = pd.to_numeric(
                         table_df[model_col], errors="coerce"
                     ).round(3)
+
+                if "Feature" in table_df.columns:
+                    table_df["Feature"] = table_df["Feature"].map(semesterized_text)
 
                 st.dataframe(table_df, width="stretch")
 

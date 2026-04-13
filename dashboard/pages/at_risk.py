@@ -72,7 +72,7 @@ def render(df, display_outcome):
         }.issubset(risk_table.columns):
             enrolled = risk_table["Curricular units 2nd sem (enrolled)"]
             approved = risk_table["Curricular units 2nd sem (approved)"]
-            risk_table["2nd Sem Progress"] = approved.div(enrolled.where(enrolled > 0))
+            risk_table["Spring Semester Progress"] = approved.div(enrolled.where(enrolled > 0))
 
         if {"Prob_Dropout", "Prob_Enrolled", "Prob_Graduate"}.issubset(risk_table.columns):
             next_best = risk_table[["Prob_Enrolled", "Prob_Graduate"]].max(axis=1)
@@ -101,7 +101,7 @@ def render(df, display_outcome):
             "Risk_Label",
             "Risk_Score",
             "Confidence Gap",
-            "2nd Sem Progress",
+            "Spring Semester Progress",
             "Curricular units 2nd sem (grade)",
             "Financial Risk",
             "Academic Alert",
@@ -119,7 +119,7 @@ def render(df, display_outcome):
                 "Predicted_Target": "Predicted",
                 "Risk_Label": "Risk",
                 "Risk_Score": "P(Dropout)",
-                "Curricular units 2nd sem (grade)": "2nd Sem Grade",
+                "Curricular units 2nd sem (grade)": "Spring Semester Grade",
             }
         )
 
@@ -128,10 +128,10 @@ def render(df, display_outcome):
             format_map["P(Dropout)"] = "{:.2%}"
         if "Confidence Gap" in risk_view.columns:
             format_map["Confidence Gap"] = "{:+.2%}"
-        if "2nd Sem Progress" in risk_view.columns:
-            format_map["2nd Sem Progress"] = "{:.1%}"
-        if "2nd Sem Grade" in risk_view.columns:
-            format_map["2nd Sem Grade"] = "{:.2f}"
+        if "Spring Semester Progress" in risk_view.columns:
+            format_map["Spring Semester Progress"] = "{:.1%}"
+        if "Spring Semester Grade" in risk_view.columns:
+            format_map["Spring Semester Grade"] = "{:.2f}"
 
         risk_styler = risk_view.style
         if format_map:
@@ -171,7 +171,7 @@ def render(df, display_outcome):
         }.issubset(low_eng_table.columns):
             enrolled = low_eng_table["Curricular units 2nd sem (enrolled)"]
             approved = low_eng_table["Curricular units 2nd sem (approved)"]
-            low_eng_table["2nd Sem Progress"] = approved.div(enrolled.where(enrolled > 0))
+            low_eng_table["Spring Semester Progress"] = approved.div(enrolled.where(enrolled > 0))
 
         if {
             "Debtor",
@@ -202,7 +202,7 @@ def render(df, display_outcome):
             "Risk_Score",
             "Curricular units 2nd sem (enrolled)",
             "Curricular units 2nd sem (approved)",
-            "2nd Sem Progress",
+            "Spring Semester Progress",
             "Curricular units 2nd sem (grade)",
             "Financial Risk",
             "Academic Alert",
@@ -217,19 +217,19 @@ def render(df, display_outcome):
                 "Predicted_Target": "Predicted",
                 "Risk_Score": "P(Dropout)",
                 "Risk_Label": "Risk",
-                "Curricular units 2nd sem (enrolled)": "2nd Sem Enrolled",
-                "Curricular units 2nd sem (approved)": "2nd Sem Approved",
-                "Curricular units 2nd sem (grade)": "2nd Sem Grade",
+                "Curricular units 2nd sem (enrolled)": "Spring Semester Enrolled",
+                "Curricular units 2nd sem (approved)": "Spring Semester Approved",
+                "Curricular units 2nd sem (grade)": "Spring Semester Grade",
             }
         )
 
         format_map = {}
         if "P(Dropout)" in low_eng_table.columns:
             format_map["P(Dropout)"] = "{:.2%}"
-        if "2nd Sem Progress" in low_eng_table.columns:
-            format_map["2nd Sem Progress"] = "{:.1%}"
-        if "2nd Sem Grade" in low_eng_table.columns:
-            format_map["2nd Sem Grade"] = "{:.2f}"
+        if "Spring Semester Progress" in low_eng_table.columns:
+            format_map["Spring Semester Progress"] = "{:.1%}"
+        if "Spring Semester Grade" in low_eng_table.columns:
+            format_map["Spring Semester Grade"] = "{:.2f}"
 
         low_eng_styler = low_eng_table.style
         if format_map:

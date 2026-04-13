@@ -87,7 +87,7 @@ def render(df_full):
             y="Avg_Grade",
             color="Avg_Grade",
             color_continuous_scale="Blues",
-            title="Avg 2nd Sem Grade by Program (Top 10)",
+            title="Avg Spring Semester Grade by Program (Top 10)",
             labels={"Avg_Grade": "Avg Grade"},
         )
         dark_layout(fig_prog_grade, height=380)
@@ -167,7 +167,7 @@ def render(df_full):
             x="Program",
             y="Curricular units 2nd sem (grade)",
             color="Program",
-            title="2nd Semester Grade by Program",
+            title="Spring Semester Grade by Program",
         )
         dark_layout(fig_g_prog, height=380)
         r1.plotly_chart(fig_g_prog, width="stretch")
@@ -192,7 +192,7 @@ def render(df_full):
             color_discrete_map=COLOR_MAP,
             symbol="Program",
             opacity=0.65,
-            title="1st vs 2nd Sem Grades by Program & Outcome",
+            title="Fall vs Spring Semester Grades by Program & Outcome",
         )
         dark_layout(fig_scatter_cp, height=420)
         st.plotly_chart(fig_scatter_cp, width="stretch")

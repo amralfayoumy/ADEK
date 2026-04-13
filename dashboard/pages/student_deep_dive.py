@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.constants import STYPE_MAP
-from dashboard.ui import dark_layout
+from dashboard.ui import dark_layout, semesterized_text
 
 
 def render(df, df_full, display_outcome, outcome_display_order):
@@ -90,7 +90,7 @@ def render(df, df_full, display_outcome, outcome_display_order):
         st.markdown(f"- Displaced: {'Yes' if stu.get('Displaced')==1 else 'No'}")
 
     with p3:
-        st.markdown("**Academic (2nd Semester)**")
+        st.markdown("**Academic (Spring Semester)**")
         st.markdown(f"- Units enrolled: {stu.get('Curricular units 2nd sem (enrolled)','N/A')}")
         st.markdown(f"- Units approved: {stu.get('Curricular units 2nd sem (approved)','N/A')}")
         st.markdown(f"- Grade: {stu.get('Curricular units 2nd sem (grade)',0):.2f}")
@@ -112,7 +112,12 @@ def render(df, df_full, display_outcome, outcome_display_order):
         stu_norm.append((stu[feat] - col_min) / rng_v)
         avg_norm.append((df_full[feat].mean() - col_min) / rng_v)
 
-    labels_short = [f.replace("Curricular units ", "").replace(" sem ", "S").replace("(", "").replace(")", "") for f in radar_features]
+    labels_short = [
+        semesterized_text(
+            f.replace("Curricular units ", "").replace("(", "").replace(")", "")
+        )
+        for f in radar_features
+    ]
 
     fig_radar = go.Figure()
     fig_radar.add_trace(
@@ -151,9 +156,9 @@ def render(df, df_full, display_outcome, outcome_display_order):
         if s.get("Tuition fees up to date") == 0:
             tips.append(("💳 Tuition Assistance", "Tuition fees are not current. Risk of administrative withdrawal. Immediate intervention required.", "High Priority"))
         if s.get("Curricular units 2nd sem (approved)", 5) == 0:
-            tips.append(("📚 Academic Probation Review", "Zero units approved in the 2nd semester signals serious academic difficulty. Schedule an urgent academic counselling session.", "High Priority"))
+            tips.append(("📚 Academic Probation Review", "Zero units approved in the Spring Semester signals serious academic difficulty. Schedule an urgent academic counselling session.", "High Priority"))
         if s.get("Curricular units 2nd sem (grade)", 10) < 8 and s.get("Curricular units 2nd sem (grade)", 10) > 0:
-            tips.append(("📖 Tutoring Programme", f"2nd semester grade is {s.get('Curricular units 2nd sem (grade)',0):.1f} - below passing threshold. Enroll in tutoring or peer-learning groups.", "Medium Priority"))
+            tips.append(("📖 Tutoring Programme", f"Spring Semester grade is {s.get('Curricular units 2nd sem (grade)',0):.1f} - below passing threshold. Enroll in tutoring or peer-learning groups.", "Medium Priority"))
         if s.get("Scholarship holder") == 0 and s.get("Debtor") == 1:
             tips.append(("🎓 Scholarship Application", "Student is in debt without scholarship support. Advise on available merit/need-based scholarships.", "Medium Priority"))
         if s.get("Age at enrollment", 20) > 30:

@@ -24,7 +24,7 @@ def render(df_full, display_outcome):
             "Grad Rate": f"{(grp['Predicted_Target']=='Graduate').mean()*100:.1f}%",
             "High Risk %": f"{(grp['Risk_Label']=='High').mean()*100:.1f}%",
             "Avg Risk Score": f"{grp['Risk_Score'].mean()*100:.1f}%",
-            "Avg 2nd Sem Grade": f"{grp['Curricular units 2nd sem (grade)'].mean():.2f}",
+            "Avg Spring Semester Grade": f"{grp['Curricular units 2nd sem (grade)'].mean():.2f}",
             "Scholarship %": f"{grp['Scholarship holder'].mean()*100:.1f}%",
             "Debtor %": f"{grp['Debtor'].mean()*100:.1f}%",
         }
@@ -96,7 +96,7 @@ def render(df_full, display_outcome):
             color="Student_Type",
             color_discrete_map=STYPE_MAP,
             box=True,
-            title="2nd Semester Grade Distribution",
+            title="Spring Semester Grade Distribution",
         )
         dark_layout(fig_grade, height=360)
         r1.plotly_chart(fig_grade, width="stretch")
@@ -108,7 +108,7 @@ def render(df_full, display_outcome):
             color_discrete_map=STYPE_MAP,
             barmode="overlay",
             opacity=0.7,
-            title="Units Approved – 2nd Semester",
+            title="Units Approved – Spring Semester",
         )
         dark_layout(fig_approved, height=360)
         r2.plotly_chart(fig_approved, width="stretch")

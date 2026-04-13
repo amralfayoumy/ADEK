@@ -112,7 +112,7 @@ def render(df):
         y="Curricular units 2nd sem (grade)",
         color="Predicted_Target_Display",
         color_discrete_map=COLOR_MAP,
-        title="2nd Sem Grade by Predicted Outcome",
+        title="Spring Semester Grade by Predicted Outcome",
     )
     dark_layout(fig_box)
     ga1.plotly_chart(fig_box, width="stretch")
@@ -124,7 +124,7 @@ def render(df):
         color="Predicted_Target_Display",
         color_discrete_map=COLOR_MAP,
         opacity=0.6,
-        title="1st vs 2nd Semester Grades",
+        title="Fall vs Spring Semester Grades",
     )
     dark_layout(fig_scatter)
     ga2.plotly_chart(fig_scatter, width="stretch")

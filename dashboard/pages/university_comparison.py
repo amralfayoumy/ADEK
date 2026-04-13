@@ -110,7 +110,7 @@ def render(df_full):
             y="Avg_Grade",
             color="University",
             text_auto=".2f",
-            title="Avg 2nd Sem Grade by University",
+            title="Avg Spring Semester Grade by University",
             color_discrete_sequence=UNI_COLORS,
         )
         dark_layout(fig_ag, height=380)

@@ -151,7 +151,7 @@ def render(df_full, display_outcome):
             color="Group",
             color_discrete_map=grp_colors,
             box=True,
-            title="2nd Sem Grade: Abroad vs Domestic",
+            title="Spring Semester Grade: Abroad vs Domestic",
         )
         dark_layout(fig_v2, height=380)
         r2.plotly_chart(fig_v2, width="stretch")
