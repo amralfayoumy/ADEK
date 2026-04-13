@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, persist_streamlit_tabs
+from dashboard.ui import dark_layout
 
 
 def render(df_full, display_outcome):
@@ -41,7 +41,6 @@ def render(df_full, display_outcome):
         ":material/account_balance: By University",
     ]
     tab1, tab2, tab3, tab4 = st.tabs(tab_options)
-    persist_streamlit_tabs("emirati_vs_expats_active_tab", tab_options)
 
     with tab1:
         r1, r2 = st.columns(2)

@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persist_streamlit_tabs
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi
 
 
 def render(df_full):
@@ -37,7 +37,6 @@ def render(df_full):
         ":material/trending_up: Year Trend",
     ]
     tab_risk, tab_funnel, tab_reasons, tab_trend = st.tabs(tab_options)
-    persist_streamlit_tabs("university_deep_dive_active_tab", tab_options)
 
     with tab_risk:
         r1, r2 = st.columns(2)

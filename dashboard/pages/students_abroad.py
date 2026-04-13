@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP
-from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persist_streamlit_tabs
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi
 
 
 def render(df_full, display_outcome):
@@ -35,7 +35,6 @@ def render(df_full, display_outcome):
         ":material/school: By Program",
     ]
     tab_overview, tab_compare, tab_uni, tab_prog = st.tabs(tab_options)
-    persist_streamlit_tabs("students_abroad_active_tab", tab_options)
 
     with tab_overview:
         c1, c2, c3 = st.columns(3)

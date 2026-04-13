@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 from dashboard.constants import UNI_COLORS
-from dashboard.ui import dark_layout, persist_streamlit_tabs
+from dashboard.ui import dark_layout
 
 
 def render(df_full):
@@ -44,7 +44,6 @@ def render(df_full):
         ":material/scatter_plot: Scatter",
     ]
     tab_bar, tab_radar, tab_trend, tab_table, tab_scatter = st.tabs(tab_options)
-    persist_streamlit_tabs("university_comparison_active_tab", tab_options)
 
     with tab_bar:
         fig_do_vs_gr = px.bar(

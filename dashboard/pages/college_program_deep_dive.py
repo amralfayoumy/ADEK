@@ -2,7 +2,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, kpi, persist_streamlit_tabs, safe_course_name
+from dashboard.ui import dark_layout, kpi, safe_course_name
 
 
 def render(df_full):
@@ -28,7 +28,6 @@ def render(df_full):
         ":material/groups: Student Types",
     ]
     tab_prog, tab_risk_heat, tab_grade, tab_stype = st.tabs(tab_options)
-    persist_streamlit_tabs("college_program_deep_dive_active_tab", tab_options)
 
     with tab_prog:
         prog_stats = (

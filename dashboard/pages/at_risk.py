@@ -2,7 +2,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.feature_decoder import decode_dataframe_features
-from dashboard.ui import dark_layout, persist_streamlit_tabs
+from dashboard.ui import dark_layout
 
 
 def _financial_risk_level(row):
@@ -39,7 +39,6 @@ def render(df, display_outcome):
 
     tab_options = [":material/error: Dropout Risk", ":material/sentiment_dissatisfied: Low Engagement"]
     tab_dropout, tab_engage = st.tabs(tab_options)
-    persist_streamlit_tabs("at_risk_active_tab", tab_options)
 
     with tab_dropout:
         high_risk = df[df["Risk_Label"] == "High"].sort_values("Risk_Score", ascending=False)
