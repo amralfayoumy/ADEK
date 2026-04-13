@@ -33,5 +33,29 @@
     "dataset_sha256": "4bf0db856e2f0f02",
     "dataset_fingerprint": "38878ffbdd5603b3",
     "python_version": "3.12.10"
+  },
+  {
+    "version": "v1.0.0",
+    "timestamp_utc": "2026-04-13 01:41:08 UTC",
+    "trigger": "manual_rollback",
+    "rollback_from_version": "v1.0.1",
+    "runtime_sec": 0.0,
+    "rows": 4424,
+    "features": 39,
+    "accuracy": 0.905063,
+    "macro_f1": 0.874344,
+    "macro_recall": 0.842387,
+    "dataset_path": "data.csv",
+    "dataset_sha256": "4bf0db856e2f0f02",
+    "dataset_fingerprint": "a92ce84293ce0a6f",
+    "python_version": "3.12.10"
+  },
+  {
+    "version": "v1.0.0",
+    "timestamp_utc": "2026-04-13 01:41:36 UTC",
+    "trigger": "manual_version_delete",
+    "removed_version": "v1.0.1",
+    "runtime_sec": 0.0,
+    "python_version": "3.12.10"
   }
 ]
