@@ -43,6 +43,10 @@ inject_global_styles()
 
 
 with st.sidebar:
+    logo_path = "dashboard/assets/abg_logo.svg"
+    if os.path.exists(logo_path):
+        with open(logo_path, "r", encoding="utf-8") as logo_file:
+            st.markdown(logo_file.read(), unsafe_allow_html=True)
     st.markdown("## :material/school: NEXUS AI")
     st.markdown("---")
 

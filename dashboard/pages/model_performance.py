@@ -978,6 +978,7 @@ def render(df_full, get_trainer, display_outcome):
         "MLOps Section",
         options=SECTION_OPTIONS,
         horizontal=True,
+        label_visibility="collapsed",
         key=ACTIVE_SECTION_KEY,
     )
 

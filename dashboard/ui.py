@@ -2,7 +2,6 @@ import json
 
 import plotly.graph_objects as go
 import streamlit as st
-import streamlit.components.v1 as components
 
 from dashboard.constants import COURSE_MAP
 
@@ -79,7 +78,7 @@ def persist_streamlit_tabs(page_key, tab_labels):
                 return
 
         payload = json.dumps({"page_key": page_key, "labels": tab_labels})
-        components.html(
+    st.iframe(
                 f"""
 <script>
 (() => {{
@@ -159,4 +158,5 @@ def persist_streamlit_tabs(page_key, tab_labels):
 </script>
                 """,
                 height=0,
+                width="stretch",
     )
