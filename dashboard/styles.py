@@ -51,10 +51,15 @@ p, li, label { color: var(--text-color); }
     margin-bottom: 8px;
 }
 
-/* Keep Sankey labels crisp in light mode (no ghost/shadow under text). */
-.js-plotly-plot .sankey .node text {
+/* Keep Sankey labels crisp across Plotly versions (no ghost/shadow under text). */
+.js-plotly-plot .sankey text,
+.js-plotly-plot .sankey .node-label,
+.js-plotly-plot .sankey .sankey-node text,
+.js-plotly-plot g.sankey text {
     text-shadow: none !important;
     filter: none !important;
+    stroke: none !important;
+    paint-order: fill !important;
 }
 </style>
 """
