@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+import streamlit as st
 
 from dashboard.constants import COURSE_MAP
 
@@ -67,4 +68,20 @@ def kpi(col, val, label, delta="", color="#60a5fa"):
         f'<p class="kpi-delta">{delta}</p>'
         f"</div>",
         unsafe_allow_html=True,
+    )
+
+
+def persistent_tab_selector(state_key, options, label="Section"):
+    if not options:
+        return None
+
+    if state_key not in st.session_state or st.session_state[state_key] not in options:
+        st.session_state[state_key] = options[0]
+
+    return st.radio(
+        label,
+        options,
+        key=state_key,
+        horizontal=True,
+        label_visibility="collapsed",
     )

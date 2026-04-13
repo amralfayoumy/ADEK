@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 from dashboard.constants import UNI_COLORS
-from dashboard.ui import dark_layout
+from dashboard.ui import dark_layout, persistent_tab_selector
 
 
 def render(df_full):
@@ -36,11 +36,16 @@ def render(df_full):
         .reset_index()
     )
 
-    tab_bar, tab_radar, tab_trend, tab_table, tab_scatter = st.tabs(
-        [":material/bar_chart: Bar Charts", ":material/radar: Radar", ":material/timeline: Trends", ":material/table_rows: Table", ":material/scatter_plot: Scatter"]
-    )
+    tab_options = [
+        ":material/bar_chart: Bar Charts",
+        ":material/radar: Radar",
+        ":material/timeline: Trends",
+        ":material/table_rows: Table",
+        ":material/scatter_plot: Scatter",
+    ]
+    active_tab = persistent_tab_selector("university_comparison_active_tab", tab_options)
 
-    with tab_bar:
+    if active_tab == tab_options[0]:
         fig_do_vs_gr = px.bar(
             uni_agg,
             x="University",
@@ -107,7 +112,7 @@ def render(df_full):
         fig_ag.update_layout(showlegend=False)
         r2.plotly_chart(fig_ag, width="stretch")
 
-    with tab_radar:
+    if active_tab == tab_options[1]:
         metrics = ["Dropout_Rate", "Grad_Rate", "High_Risk", "Avg_Risk", "Avg_Grade"]
         radar_df = uni_agg[["University"] + metrics].copy()
         for m in metrics:
@@ -139,7 +144,7 @@ def render(df_full):
         dark_layout(fig_radar_cmp)
         st.plotly_chart(fig_radar_cmp, width="stretch")
 
-    with tab_trend:
+    if active_tab == tab_options[2]:
         trend_df = cmp_df.copy()
         trend_df["Enrollment_Year"] = pd.to_numeric(
             trend_df["Enrollment_Year"], errors="coerce"
@@ -182,7 +187,7 @@ def render(df_full):
         if {"Unemployment rate", "GDP", "Risk_Score"}.issubset(cmp_df.columns):
             st.caption("Macro-economic charts were moved to the dedicated Macro-Economic page.")
 
-    with tab_table:
+    if active_tab == tab_options[3]:
         display_tbl = uni_agg.copy()
         st.dataframe(
             display_tbl.style.format(
@@ -232,7 +237,7 @@ def render(df_full):
             dark_layout(fig_uni_grade, height=420)
             st.plotly_chart(fig_uni_grade, width="stretch")
 
-    with tab_scatter:
+    if active_tab == tab_options[4]:
         fig_scat_cmp = px.scatter(
             uni_agg,
             x="Grad_Rate",

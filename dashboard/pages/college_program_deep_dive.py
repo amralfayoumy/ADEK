@@ -2,7 +2,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, kpi, safe_course_name
+from dashboard.ui import dark_layout, kpi, persistent_tab_selector, safe_course_name
 
 
 def render(df_full):
@@ -21,11 +21,15 @@ def render(df_full):
     kpi(c4, cp_df["Program"].nunique(), "Programs", "")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    tab_prog, tab_risk_heat, tab_grade, tab_stype = st.tabs(
-        [":material/bar_chart: By Program", ":material/grid_view: Risk Heatmap", ":material/functions: Grade Analysis", ":material/groups: Student Types"]
-    )
+    tab_options = [
+        ":material/bar_chart: By Program",
+        ":material/grid_view: Risk Heatmap",
+        ":material/functions: Grade Analysis",
+        ":material/groups: Student Types",
+    ]
+    active_tab = persistent_tab_selector("college_program_deep_dive_active_tab", tab_options)
 
-    with tab_prog:
+    if active_tab == tab_options[0]:
         prog_stats = (
             cp_df.groupby("Program")
             .agg(
@@ -124,12 +128,12 @@ def render(df_full):
             width="stretch",
         )
 
-    with tab_risk_heat:
+    if active_tab == tab_options[1]:
         heat = cp_df.groupby(["Program", "Risk_Label"]).size().unstack(fill_value=0)
         heat = heat.reindex(columns=["High", "Medium", "Low"], fill_value=0)
         fig_heat = px.imshow(
             heat,
-            color_continuous_scale="RdYlGn",
+            color_continuous_scale="RdYlGn_r",
             title=f"Risk Level Heatmap – {sel_cp_col}",
             labels={"color": "Count"},
             text_auto=True,
@@ -150,7 +154,7 @@ def render(df_full):
             dark_layout(fig_heat2, height=380)
             st.plotly_chart(fig_heat2, width="stretch")
 
-    with tab_grade:
+    if active_tab == tab_options[2]:
         r1, r2 = st.columns(2)
 
         fig_g_prog = px.box(
@@ -188,7 +192,7 @@ def render(df_full):
         dark_layout(fig_scatter_cp, height=420)
         st.plotly_chart(fig_scatter_cp, width="stretch")
 
-    with tab_stype:
+    if active_tab == tab_options[3]:
         r1, r2 = st.columns(2)
 
         stype_prog = cp_df.groupby(["Program", "Student_Type"]).size().reset_index(name="Count")

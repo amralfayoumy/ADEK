@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout
+from dashboard.ui import dark_layout, persistent_tab_selector
 
 
 def render(df_full, display_outcome):
@@ -29,14 +29,20 @@ def render(df_full, display_outcome):
             "Debtor %": f"{grp['Debtor'].mean()*100:.1f}%",
         }
 
-    cmp_df = pd.DataFrame([grp_kpis(em), grp_kpis(ex)], index=["Emirati", "Expat"]).T
+    cmp_df = pd.DataFrame([grp_kpis(em), grp_kpis(ex)], index=["Emirati", "Expat"]).T.astype(str)
     st.dataframe(cmp_df, width="stretch")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    tab1, tab2, tab3, tab4 = st.tabs([":material/pie_chart: Outcomes", ":material/school: Academic", ":material/account_balance_wallet: Financial", ":material/account_balance: By University"])
+    tab_options = [
+        ":material/pie_chart: Outcomes",
+        ":material/school: Academic",
+        ":material/account_balance_wallet: Financial",
+        ":material/account_balance: By University",
+    ]
+    active_tab = persistent_tab_selector("emirati_vs_expats_active_tab", tab_options)
 
-    with tab1:
+    if active_tab == tab_options[0]:
         r1, r2 = st.columns(2)
 
         outcome_data = ev_df.groupby(["Student_Type", "Predicted_Target"]).size().reset_index(name="Count")
@@ -79,7 +85,7 @@ def render(df_full, display_outcome):
         dark_layout(fig_violin, height=360)
         st.plotly_chart(fig_violin, width="stretch")
 
-    with tab2:
+    if active_tab == tab_options[1]:
         r1, r2 = st.columns(2)
 
         fig_grade = px.violin(
@@ -108,7 +114,7 @@ def render(df_full, display_outcome):
 
         st.caption("Program-level grade benchmarking is consolidated in College / Program Deep Dive.")
 
-    with tab3:
+    if active_tab == tab_options[2]:
         r1, r2 = st.columns(2)
 
         fin_metrics = (
@@ -142,7 +148,7 @@ def render(df_full, display_outcome):
         dark_layout(fig_sch, height=360)
         r2.plotly_chart(fig_sch, width="stretch")
 
-    with tab4:
+    if active_tab == tab_options[3]:
         uni_ev = (
             ev_df.groupby(["University", "Student_Type"])
             .apply(

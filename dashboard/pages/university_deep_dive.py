@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.constants import COLOR_MAP, RISK_MAP, STYPE_MAP
-from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi
+from dashboard.ui import dark_layout, enforce_integer_year_axis, kpi, persistent_tab_selector
 
 
 def render(df_full):
@@ -30,11 +30,15 @@ def render(df_full):
     kpi(c5, f"{enrolled_r*100:.1f}%", "Pending Outcome Rate", "")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    tab_risk, tab_funnel, tab_reasons, tab_trend = st.tabs(
-        [":material/stacked_bar_chart: Risk Tiers", ":material/filter_alt: Enrollment Funnel", ":material/help: Dropout Reasons", ":material/trending_up: Year Trend"]
-    )
+    tab_options = [
+        ":material/stacked_bar_chart: Risk Tiers",
+        ":material/filter_alt: Enrollment Funnel",
+        ":material/help: Dropout Reasons",
+        ":material/trending_up: Year Trend",
+    ]
+    active_tab = persistent_tab_selector("university_deep_dive_active_tab", tab_options)
 
-    with tab_risk:
+    if active_tab == tab_options[0]:
         r1, r2 = st.columns(2)
 
         risk_cnt = udf["Risk_Label"].value_counts().reindex(["High", "Medium", "Low"]).reset_index()
@@ -108,7 +112,7 @@ def render(df_full):
         dark_layout(fig_hist_u, height=320)
         r4.plotly_chart(fig_hist_u, width="stretch")
 
-    with tab_funnel:
+    if active_tab == tab_options[1]:
         years = sorted(udf["Enrollment_Year"].dropna().unique())
 
         funnel_rows = []
@@ -226,7 +230,7 @@ def render(df_full):
         dark_layout(fig_sk, height=430)
         st.plotly_chart(fig_sk, width="stretch")
 
-    with tab_reasons:
+    if active_tab == tab_options[2]:
         dropout_df = udf[(udf["Dropout_Reason"] != "") & (udf["Dropout_Reason"].notna())].copy()
         if dropout_df.empty:
             st.info("No dropout reason data for this university in the current filter.")
@@ -264,7 +268,7 @@ def render(df_full):
                 "Dropout reasons by college/program are consolidated in College / Program Deep Dive for operational planning."
             )
 
-    with tab_trend:
+    if active_tab == tab_options[3]:
         trend = (
             udf.groupby("Enrollment_Year")
             .agg(
