@@ -74,12 +74,12 @@ def kpi(col, val, label, delta="", color="#60a5fa"):
 
 
 def persist_streamlit_tabs(page_key, tab_labels):
-        if not tab_labels:
-                return
+    if not tab_labels:
+        return
 
-        payload = json.dumps({"page_key": page_key, "labels": tab_labels})
+    payload = json.dumps({"page_key": page_key, "labels": tab_labels})
     st.iframe(
-                f"""
+        f"""
 <script>
 (() => {{
     const cfg = {payload};
@@ -156,7 +156,7 @@ def persist_streamlit_tabs(page_key, tab_labels):
     }}, 100);
 }})();
 </script>
-                """,
-                height=0,
-                width="stretch",
+    """,
+    height=0,
+    width="stretch",
     )
