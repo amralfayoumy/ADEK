@@ -168,7 +168,7 @@ def render(df_full):
             y=metric_sel,
             color="University",
             markers=True,
-            title=f"{metric_sel} by Enrollment Year – All Universities",
+            title=f"Historical {metric_sel} by Enrollment Year – All Universities",
             color_discrete_sequence=UNI_COLORS,
         )
         dark_layout(fig_trend_all, height=440)

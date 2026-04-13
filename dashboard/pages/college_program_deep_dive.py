@@ -129,7 +129,7 @@ def render(df_full):
         heat = heat.reindex(columns=["High", "Medium", "Low"], fill_value=0)
         fig_heat = px.imshow(
             heat,
-            color_continuous_scale="RdYlGn_r",
+            color_continuous_scale="RdYlGn",
             title=f"Risk Level Heatmap – {sel_cp_col}",
             labels={"color": "Count"},
             text_auto=True,

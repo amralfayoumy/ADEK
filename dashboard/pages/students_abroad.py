@@ -85,7 +85,7 @@ def render(df_full, display_outcome):
             x="Enrollment_Year",
             y=["Dropout_Rate", "Grad_Rate"],
             markers=True,
-            title="Abroad Students – Year-over-Year Trend",
+            title="Abroad Students – Historical Year-over-Year Trend",
             color_discrete_map={"Dropout_Rate": "#f87171", "Grad_Rate": "#34d399"},
         )
         dark_layout(fig_trend_ab, height=360)

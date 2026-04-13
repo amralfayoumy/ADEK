@@ -280,7 +280,7 @@ def render(df_full):
             x="Enrollment_Year",
             y=["Dropout_Rate", "Grad_Rate", "High_Risk"],
             markers=True,
-            title=f"Year-over-Year Trends – {sel_uni}",
+            title=f"Historical Year-over-Year Trends – {sel_uni}",
             color_discrete_map={"Dropout_Rate": "#f87171", "Grad_Rate": "#34d399", "High_Risk": "#fbbf24"},
             labels={"value": "Rate", "variable": "Metric"},
         )
