@@ -51,7 +51,7 @@ with st.sidebar:
     if os.path.exists(logo_path):
         with open(logo_path, "r", encoding="utf-8") as logo_file:
             st.markdown(logo_file.read(), unsafe_allow_html=True)
-    st.markdown("## :material/school: NEXUS AI")
+    st.markdown("## :material/school: NEXIS AI")
     st.markdown("---")
 
     nav_pages = [p for p in PAGES if p != ":material/public: Macro-Economic"]
