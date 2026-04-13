@@ -46,7 +46,8 @@ with st.sidebar:
     st.markdown("## :material/school: NEXUS AI")
     st.markdown("---")
 
-    page = st.radio("Navigation", PAGES, label_visibility="collapsed")
+    nav_pages = [p for p in PAGES if p != ":material/public: Macro-Economic"]
+    page = st.radio("Navigation", nav_pages, label_visibility="collapsed")
 
     st.markdown("---")
 
@@ -54,8 +55,8 @@ with st.sidebar:
     model_ok = not need_training()
 
     st.markdown("### Status")
-    st.markdown(f"{':material/check_circle:' if data_ok else ':material/error:'} dataset `data.csv`")
-    st.markdown(f"{':material/check_circle:' if model_ok else ':material/schedule:'} trained model")
+    st.markdown(f"{':material/check_circle:' if data_ok else ':material/error:'} Dataset ready")
+    st.markdown(f"{':material/check_circle:' if model_ok else ':material/schedule:'} Trained model ready")
 
     if not data_ok:
         st.warning("Place `data.csv` in the same folder, then refresh.")
@@ -118,7 +119,7 @@ df_full, df = add_display_columns(df_full, df, display_outcome)
 
 ROUTES = {
     ":material/insights: Overview": lambda: overview.render(df),
-    ":material/public: Macro-Economic": lambda: macro_economic.render(df),
+    # ":material/public: Macro-Economic": lambda: macro_economic.render(df),
     ":material/balance: University Comparison": lambda: university_comparison.render(df_full),
     ":material/account_balance: University Deep Dive": lambda: university_deep_dive.render(df_full),
     ":material/school: College / Program Deep Dive": lambda: college_program_deep_dive.render(df_full),
