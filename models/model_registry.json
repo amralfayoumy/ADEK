@@ -14,5 +14,24 @@
     "dataset_sha256": "4bf0db856e2f0f02",
     "dataset_fingerprint": "0647af8092163f70",
     "python_version": "3.12.10"
+  },
+  {
+    "version": "v1.0.1",
+    "timestamp_utc": "2026-04-13 01:40:05 UTC",
+    "trigger": "manual_candidate_promotion",
+    "candidate_id": "cand_20260413_013743",
+    "snapshot_dir": "models/versions\\v1.0.1",
+    "runtime_sec": 104.77,
+    "rows": 4424,
+    "features": 39,
+    "accuracy": 0.905063,
+    "macro_f1": 0.874344,
+    "macro_recall": 0.842387,
+    "baseline_accuracy": 0.905063,
+    "baseline_macro_f1": 0.874344,
+    "dataset_path": "data.csv",
+    "dataset_sha256": "4bf0db856e2f0f02",
+    "dataset_fingerprint": "38878ffbdd5603b3",
+    "python_version": "3.12.10"
   }
 ]
