@@ -36,7 +36,12 @@ def render(df_full):
         ":material/help: Dropout Reasons",
         ":material/trending_up: Year Trend",
     ]
-    tab_risk, tab_funnel, tab_reasons, tab_trend = st.tabs(tab_options)
+    tabs_key = f"university_deep_dive_tabs_{st.session_state.get('ui_tab_reset_nonce', 0)}"
+    tab_risk, tab_funnel, tab_reasons, tab_trend = st.tabs(
+        tab_options,
+        default=tab_options[0],
+        key=tabs_key,
+    )
 
     with tab_risk:
         r1, r2 = st.columns(2)

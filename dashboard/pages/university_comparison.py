@@ -43,7 +43,12 @@ def render(df_full):
         ":material/table_rows: Table",
         ":material/scatter_plot: Scatter",
     ]
-    tab_bar, tab_radar, tab_trend, tab_table, tab_scatter = st.tabs(tab_options)
+    tabs_key = f"university_comparison_tabs_{st.session_state.get('ui_tab_reset_nonce', 0)}"
+    tab_bar, tab_radar, tab_trend, tab_table, tab_scatter = st.tabs(
+        tab_options,
+        default=tab_options[0],
+        key=tabs_key,
+    )
 
     with tab_bar:
         fig_do_vs_gr = px.bar(

@@ -40,7 +40,8 @@ def render(df_full, display_outcome):
         ":material/account_balance_wallet: Financial",
         ":material/account_balance: By University",
     ]
-    tab1, tab2, tab3, tab4 = st.tabs(tab_options)
+    tabs_key = f"emirati_vs_expats_tabs_{st.session_state.get('ui_tab_reset_nonce', 0)}"
+    tab1, tab2, tab3, tab4 = st.tabs(tab_options, default=tab_options[0], key=tabs_key)
 
     with tab1:
         r1, r2 = st.columns(2)

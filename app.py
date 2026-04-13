@@ -33,6 +33,10 @@ from dashboard.pages import (
 )
 from dashboard.styles import inject_global_styles
 
+
+TAB_RESET_NONCE_KEY = "ui_tab_reset_nonce"
+LAST_PAGE_KEY = "ui_last_selected_page"
+
 st.set_page_config(
     page_title="UAE Student Risk Analytics",
     page_icon=":material/school:",
@@ -52,6 +56,13 @@ with st.sidebar:
 
     nav_pages = [p for p in PAGES if p != ":material/public: Macro-Economic"]
     page = st.radio("Navigation", nav_pages, label_visibility="collapsed")
+
+    if LAST_PAGE_KEY not in st.session_state:
+        st.session_state[LAST_PAGE_KEY] = page
+        st.session_state.setdefault(TAB_RESET_NONCE_KEY, 0)
+    elif st.session_state[LAST_PAGE_KEY] != page:
+        st.session_state[LAST_PAGE_KEY] = page
+        st.session_state[TAB_RESET_NONCE_KEY] = st.session_state.get(TAB_RESET_NONCE_KEY, 0) + 1
 
     st.markdown("---")
 

@@ -38,7 +38,8 @@ def render(df, display_outcome):
     st.markdown("# :material/warning: Early Warning System")
 
     tab_options = [":material/error: Dropout Risk", ":material/sentiment_dissatisfied: Low Engagement"]
-    tab_dropout, tab_engage = st.tabs(tab_options)
+    tabs_key = f"at_risk_tabs_{st.session_state.get('ui_tab_reset_nonce', 0)}"
+    tab_dropout, tab_engage = st.tabs(tab_options, default=tab_options[0], key=tabs_key)
 
     with tab_dropout:
         high_risk = df[df["Risk_Label"] == "High"].sort_values("Risk_Score", ascending=False)

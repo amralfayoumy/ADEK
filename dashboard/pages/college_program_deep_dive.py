@@ -27,7 +27,12 @@ def render(df_full):
         ":material/functions: Grade Analysis",
         ":material/groups: Student Types",
     ]
-    tab_prog, tab_risk_heat, tab_grade, tab_stype = st.tabs(tab_options)
+    tabs_key = f"college_program_deep_dive_tabs_{st.session_state.get('ui_tab_reset_nonce', 0)}"
+    tab_prog, tab_risk_heat, tab_grade, tab_stype = st.tabs(
+        tab_options,
+        default=tab_options[0],
+        key=tabs_key,
+    )
 
     with tab_prog:
         prog_stats = (

@@ -34,7 +34,12 @@ def render(df_full, display_outcome):
         ":material/account_balance: By University",
         ":material/school: By Program",
     ]
-    tab_overview, tab_compare, tab_uni, tab_prog = st.tabs(tab_options)
+    tabs_key = f"students_abroad_tabs_{st.session_state.get('ui_tab_reset_nonce', 0)}"
+    tab_overview, tab_compare, tab_uni, tab_prog = st.tabs(
+        tab_options,
+        default=tab_options[0],
+        key=tabs_key,
+    )
 
     with tab_overview:
         c1, c2, c3 = st.columns(3)
